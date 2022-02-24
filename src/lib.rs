@@ -5,10 +5,13 @@ mod registers;
 use interface::WriteFrame;
 
 #[doc(inline)]
+pub use registers::analogue_audio_path::{InselV, SideAttdB};
+#[doc(inline)]
 pub use registers::headphone_out::HpVoldB;
 #[doc(inline)]
 pub use registers::line_in::InVoldB;
 
+use registers::analogue_audio_path::AnalogueAudioPath;
 use registers::headphone_out::LeftHeadphoneOut;
 use registers::headphone_out::RightHeadphoneOut;
 use registers::line_in::LeftLineIn;
@@ -23,6 +26,7 @@ where
     right_line_in: RightLineIn,
     left_headphone_out_vol: HpVoldB,
     right_headphone_out_vol: HpVoldB,
+    analogue_audio_path: AnalogueAudioPath,
 }
 
 impl<I> Wm8731<I>
@@ -37,6 +41,7 @@ where
             right_line_in: Default::default(),
             left_headphone_out_vol: Default::default(),
             right_headphone_out_vol: Default::default(),
+            analogue_audio_path: Default::default(),
         };
         codec.reset();
         codec
@@ -151,6 +156,48 @@ where
                 .set_vol(volume)
                 .to_frame(),
         );
+        self
+    }
+
+    pub fn set_micboost(&mut self, value: bool) -> &mut Self {
+        self.analogue_audio_path.set_micboost(value);
+        self.interface.write(self.analogue_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_mutemic(&mut self, value: bool) -> &mut Self {
+        self.analogue_audio_path.set_mutemic(value);
+        self.interface.write(self.analogue_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_insel(&mut self, value: InselV) -> &mut Self {
+        self.analogue_audio_path.set_insel(value);
+        self.interface.write(self.analogue_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_bypass(&mut self, value: bool) -> &mut Self {
+        self.analogue_audio_path.set_bypass(value);
+        self.interface.write(self.analogue_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_dacsel(&mut self, value: bool) -> &mut Self {
+        self.analogue_audio_path.set_dacsel(value);
+        self.interface.write(self.analogue_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_sidetone(&mut self, value: bool) -> &mut Self {
+        self.analogue_audio_path.set_sidetone(value);
+        self.interface.write(self.analogue_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_sideatt(&mut self, value: SideAttdB) -> &mut Self {
+        self.analogue_audio_path.set_sideatt(value);
+        self.interface.write(self.analogue_audio_path.to_frame());
         self
     }
 }
