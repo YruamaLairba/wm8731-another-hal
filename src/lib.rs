@@ -12,6 +12,7 @@ pub use registers::headphone_out::HpVoldB;
 pub use registers::line_in::InVoldB;
 
 use registers::analogue_audio_path::AnalogueAudioPath;
+use registers::digital_audio_path::DigitalAudioPath;
 use registers::headphone_out::LeftHeadphoneOut;
 use registers::headphone_out::RightHeadphoneOut;
 use registers::line_in::LeftLineIn;
@@ -27,6 +28,7 @@ where
     left_headphone_out_vol: HpVoldB,
     right_headphone_out_vol: HpVoldB,
     analogue_audio_path: AnalogueAudioPath,
+    digital_audio_path: DigitalAudioPath,
 }
 
 impl<I> Wm8731<I>
@@ -42,6 +44,7 @@ where
             left_headphone_out_vol: Default::default(),
             right_headphone_out_vol: Default::default(),
             analogue_audio_path: Default::default(),
+            digital_audio_path: Default::default(),
         };
         codec.reset();
         codec
@@ -198,6 +201,31 @@ where
     pub fn set_sideatt(&mut self, value: SideAttdB) -> &mut Self {
         self.analogue_audio_path.set_sideatt(value);
         self.interface.write(self.analogue_audio_path.to_frame());
+        self
+    }
+
+    ///  `true` disable ADC high pass filter. `false` enable ADC high pass filter.
+    pub fn set_adchpd(&mut self, value: bool) -> &mut Self {
+        self.digital_audio_path.set_adchpd(value);
+        self.interface.write(self.digital_audio_path.to_frame());
+        self
+    }
+
+    #[cfg(doc)]
+    /// *Unavailable yet because it require some strategies to prevent invalid value.*
+    pub fn set_deemp(&mut self, value: bool) -> &mut Self {
+        todo!()
+    }
+
+    pub fn set_dacmu(&mut self, value: bool) -> &mut Self {
+        self.digital_audio_path.set_dacmu(value);
+        self.interface.write(self.digital_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_hpor(&mut self, value: bool) -> &mut Self {
+        self.digital_audio_path.set_hpor(value);
+        self.interface.write(self.digital_audio_path.to_frame());
         self
     }
 }
