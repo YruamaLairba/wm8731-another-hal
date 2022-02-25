@@ -55,7 +55,7 @@ impl DigitalAudioPath {
     }
     pub fn set_deemp(&mut self, value: DeempV) -> &mut Self {
         let pos = 1;
-        self.data = self.data & !(1 << pos) | (value as u8) << pos;
+        self.data = self.data & !(0b11 << pos) | (value as u8) << pos;
         self
     }
     pub fn set_dacmu(&mut self, value: bool) -> &mut Self {
