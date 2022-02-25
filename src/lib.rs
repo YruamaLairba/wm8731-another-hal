@@ -17,6 +17,7 @@ use registers::headphone_out::LeftHeadphoneOut;
 use registers::headphone_out::RightHeadphoneOut;
 use registers::line_in::LeftLineIn;
 use registers::line_in::RightLineIn;
+use registers::power_down::PowerDown;
 
 pub struct Wm8731<I>
 where
@@ -29,6 +30,7 @@ where
     right_headphone_out_vol: HpVoldB,
     analogue_audio_path: AnalogueAudioPath,
     digital_audio_path: DigitalAudioPath,
+    power_down: PowerDown,
 }
 
 impl<I> Wm8731<I>
@@ -45,6 +47,7 @@ where
             right_headphone_out_vol: Default::default(),
             analogue_audio_path: Default::default(),
             digital_audio_path: Default::default(),
+            power_down: Default::default(),
         };
         codec.reset();
         codec
@@ -212,7 +215,7 @@ where
     }
 
     #[cfg(doc)]
-    /// *Unavailable yet because it require some strategies to prevent invalid value.*
+    /// *Unavailable yet because it require some strategies to prevent invalid values.*
     pub fn set_deemp(&mut self, value: bool) -> &mut Self {
         todo!()
     }
@@ -226,6 +229,47 @@ where
     pub fn set_hpor(&mut self, value: bool) -> &mut Self {
         self.digital_audio_path.set_hpor(value);
         self.interface.write(self.digital_audio_path.to_frame());
+        self
+    }
+
+    pub fn set_lineinpd(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_lineinpd(value);
+        self.interface.write(self.power_down.to_frame());
+        self
+    }
+    pub fn set_micpd(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_micpd(value);
+        self.interface.write(self.power_down.to_frame());
+        self
+    }
+    pub fn set_adcpd(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_adcpd(value);
+        self.interface.write(self.power_down.to_frame());
+        self
+    }
+    pub fn set_dacpd(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_dacpd(value);
+        self.interface.write(self.power_down.to_frame());
+        self
+    }
+    pub fn set_outpd(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_outpd(value);
+        self.interface.write(self.power_down.to_frame());
+        self
+    }
+    pub fn set_oscpd(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_oscpd(value);
+        self.interface.write(self.power_down.to_frame());
+        self
+    }
+    pub fn set_clkoutpd(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_clkoutpd(value);
+        self.interface.write(self.power_down.to_frame());
+        self
+    }
+    pub fn set_poweroff(&mut self, value: bool) -> &mut Self {
+        self.power_down.set_poweroff(value);
+        self.interface.write(self.power_down.to_frame());
         self
     }
 }
