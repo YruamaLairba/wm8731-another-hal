@@ -66,7 +66,7 @@ impl AnalogueAudioPath {
     /// Get attenuation applyed to the sidetone path.
     pub fn sideatt(&mut self) -> SideAttdB {
         let pos = 6;
-        unsafe { SideAttdB::from_raw_unchecked((self.data & (0b11 << pos)) as _) }
+        unsafe { SideAttdB::from_raw_unchecked(((self.data & (0b11 << pos)) >> pos) as _) }
     }
 
     /// Set if mic boost enabled.
