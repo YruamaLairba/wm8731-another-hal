@@ -1,5 +1,6 @@
 //! Registers of Wm8731 codec.
 
+pub mod active;
 pub mod analogue_audio_path;
 pub mod digital_audio_interface;
 pub mod digital_audio_path;

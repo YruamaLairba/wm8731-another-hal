@@ -15,6 +15,7 @@ pub use registers::line_in::InVoldB;
 #[doc(inline)]
 pub use registers::sampling::SamplingRates;
 
+use registers::active::Active;
 use registers::analogue_audio_path::AnalogueAudioPath;
 use registers::digital_audio_interface::DigitalAudioInterface;
 use registers::digital_audio_path::DigitalAudioPath;
@@ -30,7 +31,6 @@ where
     I: WriteFrame,
 {
     interface: I,
-    active: bool,
     left_line_in: LeftLineIn,
     right_line_in: RightLineIn,
     left_headphone_out_vol: HpVoldB,
@@ -40,6 +40,7 @@ where
     power_down: PowerDown,
     digital_audio_interface: DigitalAudioInterface,
     sampling: Sampling,
+    active: Active,
 }
 
 impl<I> Wm8731<I>
@@ -50,7 +51,6 @@ where
     pub fn new(interface: I) -> Self {
         let mut codec = Self {
             interface,
-            active: false,
             left_line_in: Default::default(),
             right_line_in: Default::default(),
             left_headphone_out_vol: Default::default(),
@@ -60,6 +60,7 @@ where
             power_down: Default::default(),
             digital_audio_interface: Default::default(),
             sampling: Default::default(),
+            active: Default::default(),
         };
         codec.reset();
         codec
@@ -67,12 +68,15 @@ where
 
     /// Activate digital audio interface.
     pub fn activate(&mut self) {
-        self.active = true;
-        todo!();
+        self.interface
+            .write(self.digital_audio_interface.to_frame());
+        self.interface.write(self.sampling.to_frame());
+        self.active.set(true);
+        self.interface.write(self.active.to_frame());
     }
     /// Deactivate digital audio interface.
     pub fn deactivate(&mut self) {
-        self.active = false;
+        self.active.set(false);
         todo!();
     }
 
@@ -299,37 +303,37 @@ where
     // digital audio interface -- value stored only if inactive, sended only when activate
 
     pub fn set_format(&mut self, value: FormatV) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.digital_audio_interface.set_format(value);
         }
         self
     }
     pub fn set_iwl(&mut self, value: IwlV) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.digital_audio_interface.set_iwl(value);
         }
         self
     }
     pub fn set_lrp(&mut self, value: bool) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.digital_audio_interface.set_lrp(value);
         }
         self
     }
     pub fn set_lrswap(&mut self, value: bool) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.digital_audio_interface.set_lrswap(value);
         }
         self
     }
     pub fn set_ms(&mut self, value: MsV) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.digital_audio_interface.set_ms(value);
         }
         self
     }
     pub fn set_bclkinv(&mut self, value: bool) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.digital_audio_interface.set_bclkinv(value);
         }
         self
@@ -339,19 +343,19 @@ where
 
     /// Set Sampling Rates.
     pub fn set_sampling_rates(&mut self, value: SamplingRates) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.sampling.set_sampling_rates(value);
         }
         self
     }
     pub fn set_clkidiv2(&mut self, value: bool) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.sampling.set_clkidiv2(value);
         }
         self
     }
     pub fn set_clkodiv2(&mut self, value: bool) -> &mut Self {
-        if !self.active {
+        if !self.active.get() {
             self.sampling.set_clkodiv2(value);
         }
         self
