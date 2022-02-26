@@ -38,10 +38,10 @@ impl DigitalAudioInterface {
     pub fn iwl(&mut self) -> IwlV {
         let pos = 2;
         match (self.data & (0b11 << pos)) >> pos {
-            0b11 => IwlV::Iwl32bits,
-            0b10 => IwlV::Iwl24bits,
-            0b01 => IwlV::Iwl20bits,
-            0b00 => IwlV::Iwl16bits,
+            0b11 => IwlV::Iwl32Bits,
+            0b10 => IwlV::Iwl24Bits,
+            0b01 => IwlV::Iwl20Bits,
+            0b00 => IwlV::Iwl16Bits,
             _ => unreachable!(),
         }
     }
@@ -105,10 +105,10 @@ pub enum FormatV {
 }
 
 pub enum IwlV {
-    Iwl32bits = 0b11,
-    Iwl24bits = 0b10,
-    Iwl20bits = 0b01,
-    Iwl16bits = 0b00,
+    Iwl32Bits = 0b11,
+    Iwl24Bits = 0b10,
+    Iwl20Bits = 0b01,
+    Iwl16Bits = 0b00,
 }
 
 pub enum MsV {
