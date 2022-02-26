@@ -63,7 +63,7 @@ where
             sampling: Default::default(),
             active: Default::default(),
         };
-        codec.reset();
+        //codec.reset();
         codec
     }
 
