@@ -12,6 +12,8 @@ pub use registers::digital_audio_interface::{FormatV, IwlV, MsV};
 pub use registers::headphone_out::HpVoldB;
 #[doc(inline)]
 pub use registers::line_in::InVoldB;
+#[doc(inline)]
+pub use registers::sampling::SamplingRates;
 
 use registers::analogue_audio_path::AnalogueAudioPath;
 use registers::digital_audio_interface::DigitalAudioInterface;
@@ -21,6 +23,7 @@ use registers::headphone_out::RightHeadphoneOut;
 use registers::line_in::LeftLineIn;
 use registers::line_in::RightLineIn;
 use registers::power_down::PowerDown;
+use registers::sampling::Sampling;
 
 pub struct Wm8731<I>
 where
@@ -36,6 +39,7 @@ where
     digital_audio_path: DigitalAudioPath,
     power_down: PowerDown,
     digital_audio_interface: DigitalAudioInterface,
+    sampling: Sampling,
 }
 
 impl<I> Wm8731<I>
@@ -55,6 +59,7 @@ where
             digital_audio_path: Default::default(),
             power_down: Default::default(),
             digital_audio_interface: Default::default(),
+            sampling: Default::default(),
         };
         codec.reset();
         codec
@@ -326,6 +331,28 @@ where
     pub fn set_bclkinv(&mut self, value: bool) -> &mut Self {
         if !self.active {
             self.digital_audio_interface.set_bclkinv(value);
+        }
+        self
+    }
+
+    // Sampling -- value stored only if inactive, sended only when activate
+
+    /// Set Sampling Rates.
+    pub fn set_sampling_rates(&mut self, value: SamplingRates) -> &mut Self {
+        if !self.active {
+            self.sampling.set_sampling_rates(value);
+        }
+        self
+    }
+    pub fn set_clkidiv2(&mut self, value: bool) -> &mut Self {
+        if !self.active {
+            self.sampling.set_clkidiv2(value);
+        }
+        self
+    }
+    pub fn set_clkodiv2(&mut self, value: bool) -> &mut Self {
+        if !self.active {
+            self.sampling.set_clkodiv2(value);
         }
         self
     }
