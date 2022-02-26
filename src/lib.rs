@@ -27,6 +27,7 @@ use registers::line_in::RightLineIn;
 use registers::power_down::PowerDown;
 use registers::sampling::Sampling;
 
+#[derive(Debug)]
 pub struct Wm8731<I>
 where
     I: WriteFrame,

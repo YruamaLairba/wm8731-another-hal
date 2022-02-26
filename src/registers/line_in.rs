@@ -9,9 +9,11 @@ mod in_vol_db;
 pub use in_vol_db::InVoldB;
 
 ///Marker indicating left channel
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Left;
 
 ///Marker indicating right channel
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Right;
 
 /// Line in configuration builder.

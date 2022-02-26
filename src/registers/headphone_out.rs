@@ -9,9 +9,11 @@ mod hp_vol_db;
 pub use hp_vol_db::*;
 
 ///Marker indicating left channel
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Left;
 
 ///Marker indicating right channel
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Right;
 
 ///Headphone out configuration builder
