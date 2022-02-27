@@ -25,6 +25,7 @@ use registers::headphone_out::RightHeadphoneOut;
 use registers::line_in::LeftLineIn;
 use registers::line_in::RightLineIn;
 use registers::power_down::PowerDown;
+use registers::reset::Reset;
 use registers::sampling::Sampling;
 
 #[derive(Debug)]
@@ -49,7 +50,7 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
-    ///Instantiate a driver. This also reset the codec to guarantee a known state.
+    ///Instantiate a driver. This also reset the codec to guarantee a known coherent state.
     pub fn new(interface: I) -> Self {
         let mut codec = Self {
             interface,
@@ -64,7 +65,7 @@ where
             sampling: Default::default(),
             active: Default::default(),
         };
-        //codec.reset();
+        codec.interface.write(Reset::new().to_frame());
         codec
     }
 
@@ -79,12 +80,22 @@ where
     /// Deactivate digital audio interface.
     pub fn deactivate(&mut self) {
         self.active.set(false);
-        todo!();
+        self.interface.write(self.active.to_frame());
     }
 
     /// Reset the codec. All configuration is lost.
     pub fn reset(&mut self) {
-        todo!();
+        self.interface.write(Reset::new().to_frame());
+        self.left_line_in = Default::default();
+        self.right_line_in = Default::default();
+        self.left_headphone_out_vol = Default::default();
+        self.right_headphone_out_vol = Default::default();
+        self.analogue_audio_path = Default::default();
+        self.digital_audio_path = Default::default();
+        self.power_down = Default::default();
+        self.digital_audio_interface = Default::default();
+        self.sampling = Default::default();
+        self.active = Default::default();
     }
 }
 
