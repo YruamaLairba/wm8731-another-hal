@@ -5,8 +5,31 @@ use core::panic::PanicInfo;
 //use stm32::interrupt;
 use rtt_target::rprintln;
 
+use stm32f4xx_hal as hal;
+
+use hal::gpio::{Alternate, NoPin, Output, Pin, PushPull};
+use hal::pac;
+use hal::spi;
+use hal::spi::Spi;
+use wm8731_another_hal::prelude::*;
+type MyWm8731 = Wm8731<
+    SPIInterfaceU8<
+        Spi<
+            pac::SPI1,
+            (
+                Pin<Alternate<PushPull, 5_u8>, 'A', 5_u8>,
+                NoPin,
+                Pin<Alternate<PushPull, 5_u8>, 'A', 7_u8>,
+            ),
+            spi::TransferModeNormal,
+        >,
+        stm32f4xx_hal::gpio::Pin<Output<PushPull>, 'B', 2_u8>,
+    >,
+>;
+
 #[rtic::app(device = stm32f4xx_hal::pac, peripherals = true)]
 mod app {
+    use super::MyWm8731;
     use core::fmt::Write;
     use hal::gpio::NoPin;
     use hal::prelude::*;
@@ -17,10 +40,15 @@ mod app {
     use wm8731_another_hal::prelude::*;
 
     #[shared]
-    struct Shared {}
+    struct Shared {
+        wm8731: MyWm8731,
+    }
 
     #[local]
-    struct Local {}
+    struct Local {
+        input: rtt_target::DownChannel,
+        //output: rtt_target::UpChannel,
+    }
 
     #[init]
     fn init(ctx: init::Context) -> (Shared, Local, init::Monotonics) {
@@ -45,8 +73,7 @@ mod app {
         };
         let output = channels.up.0;
         let mut log = channels.up.1;
-        let mut input = channels.down.0;
-        let mut buf = [0u8; 512];
+        let input = channels.down.0;
         set_print_channel(output);
 
         let device = ctx.device;
@@ -73,19 +100,13 @@ mod app {
             phase: spi::Phase::CaptureOnSecondTransition, //With IdleHigh, capture on rising edge
         };
 
-        let spi1 = Spi::new(
-            device.SPI1,
-            (pa5, NoPin, pa7),
-            spi1_mode,
-            1.MHz(),
-            &clocks,
-        );
+        let spi1 = Spi::new(device.SPI1, (pa5, NoPin, pa7), spi1_mode, 1.MHz(), &clocks);
 
         // Create a delay abstraction based on SysTick
         let mut delay = ctx.core.SYST.delay(&clocks);
 
         rprintln!("Instanciate wm8731");
-        let mut wm8731 = Wm8731::new(SPIInterfaceU8::new(spi1, pb2));
+        let mut wm8731: MyWm8731 = Wm8731::new(SPIInterfaceU8::new(spi1, pb2));
         {
             //power down
             rprintln!("Power Down");
@@ -135,6 +156,14 @@ mod app {
             writeln!(log, "{:#?}", wm8731).ok();
         }
 
+        (Shared { wm8731 }, Local { input }, init::Monotonics())
+    }
+
+    #[idle(shared = [wm8731], local = [input])]
+    fn idle(cx: idle::Context) -> ! {
+        let mut wm8731 = cx.shared.wm8731;
+        let input = cx.local.input;
+        let mut buf = [0u8; 512];
         loop {
             let bytes = input.read(&mut buf[..]);
             let cmd = unsafe { core::str::from_utf8_unchecked(&buf[..bytes]) }.trim_end();
@@ -145,7 +174,9 @@ mod app {
                 if let Ok(val) = val.parse::<i8>() {
                     let vol = (val + (HpVoldB::Z0DB.into_raw() as i8)) as u8;
                     let vol = HpVoldB::from_raw(vol);
-                    wm8731.set_both_headphone_out_vol(vol, false);
+                    wm8731.lock(|wm8731| {
+                        wm8731.set_both_headphone_out_vol(vol, false);
+                    });
                     rprintln!("hpvol {}", vol);
                 }
             }
@@ -158,23 +189,35 @@ mod app {
                     "Mic" => InselV::Mic,
                     _ => continue,
                 };
-                wm8731.set_insel(val2);
+                wm8731.lock(|wm8731| {
+                    wm8731.set_insel(val2);
+                });
                 rprintln!("insel {:?}", val);
+            }
+
+            //dacsel
+            if let Some(val) = cmd.strip_prefix("dacsel") {
+                let val = val.trim();
+                if let Ok(val) = val.parse::<bool>() {
+                    wm8731.lock(|wm8731| {
+                        wm8731.set_dacsel(val);
+                    });
+                    rprintln!("dacsel {:?}", val);
+                }
             }
 
             //bypass
             if let Some(val) = cmd.strip_prefix("bypass") {
                 let val = val.trim();
                 if let Ok(val) = val.parse::<bool>() {
-                    wm8731.set_bypass(val);
+                    wm8731.lock(|wm8731| {
+                        wm8731.set_bypass(val);
+                    });
                     rprintln!("bypass {:?}", val);
                 }
             }
-
             buf.fill(0);
-            delay.delay_ms(100_u32);
         }
-        (Shared {}, Local {}, init::Monotonics())
     }
 }
 
