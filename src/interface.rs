@@ -1,4 +1,5 @@
 //! Handle communication details
+use core::fmt;
 use core::marker::PhantomData;
 use embedded_hal::blocking::{i2c, spi};
 use embedded_hal::digital::v2::OutputPin;
@@ -41,6 +42,12 @@ pub struct I2CInterface<I2C> {
     address: u8,
 }
 
+impl<I2C> core::fmt::Debug for I2CInterface<I2C> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "I2CInterface<I2C>{{ address:{:0b} }}", self.address)
+    }
+}
+
 impl<I2C> I2CInterface<I2C>
 where
     I2C: i2c::Write,
@@ -68,6 +75,12 @@ pub struct SPIInterface<SPI, CS, W> {
     spi: SPI,
     cs: CS,
     w: PhantomData<W>,
+}
+
+impl<SPI, CS, W> core::fmt::Debug for SPIInterface<SPI, CS, W> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "SPIInterface<SPI, CS, W>")
+    }
 }
 
 impl<SPI, CS, W> SPIInterface<SPI, CS, W> {
