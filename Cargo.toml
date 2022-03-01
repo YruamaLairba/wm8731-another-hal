@@ -17,7 +17,7 @@ wm8731-another-hal = {path = "wm8731-another-hal"}
 
 [dependencies.stm32f4xx-hal]
 version = "0.12"
-features = ["rt", "stm32f411"] # replace the model of your microcontroller here
+features = ["rt", "stm32f411","i2s"] # replace the model of your microcontroller here
 
 # this lets you use `cargo fix`!
 [[bin]]
