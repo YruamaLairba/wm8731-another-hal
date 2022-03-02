@@ -1,4 +1,8 @@
 #![no_std]
+
+#[macro_use]
+mod macros;
+
 pub mod interface;
 pub mod prelude;
 mod registers;
@@ -260,6 +264,12 @@ where
         todo!()
     }
 
+    #[doc = concat!(warning!("May be buggy")," DAC Soft Mute Control")]
+    ///
+    /// **May be buggy:** With some chips, actual behavior doesn't correspond to the datasheet
+    /// description and may interfere with `DACSEL`, `BYPASS` and `SIDETONE` setting. A workaround
+    /// consist to always resend an analogue path control command right after a digital path
+    /// control command.
     pub fn set_dacmu(&mut self, value: bool) -> &mut Self {
         self.digital_audio_path.set_dacmu(value);
         self.interface.write(self.digital_audio_path.to_frame());

@@ -58,6 +58,12 @@ impl DigitalAudioPath {
         self.data = self.data & !(0b11 << pos) | (value as u8) << pos;
         self
     }
+    #[doc = concat!(warning!("May be buggy")," DAC Soft Mute Control")]
+    ///
+    /// **May be buggy:** With some chips, actual behavior doesn't correspond to the datasheet
+    /// description and may interfere with `DACSEL`, `BYPASS` and `SIDETONE` setting. A workaround
+    /// consist to always resend an analogue path control command right after a digital path
+    /// control command.
     pub fn set_dacmu(&mut self, value: bool) -> &mut Self {
         let pos = 3;
         self.data = self.data & !(1 << pos) | (value as u8) << pos;
