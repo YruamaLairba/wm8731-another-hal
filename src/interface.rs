@@ -109,8 +109,9 @@ where
 {
     fn write(&mut self, frame: Frame) {
         let frame: [u8; 2] = frame.into();
+        let _ = self.spi.write(&frame[0..1]);
         let _ = self.cs.set_low();
-        let _ = self.spi.write(&frame);
+        let _ = self.spi.write(&frame[1..2]);
         let _ = self.cs.set_high();
     }
 }
