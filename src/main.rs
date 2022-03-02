@@ -169,7 +169,7 @@ mod app {
             phase: spi::Phase::CaptureOnSecondTransition, //With IdleHigh, capture on rising edge
         };
 
-        let spi1 = Spi::new(device.SPI1, (pa5, NoPin, pa7), spi1_mode, 1.MHz(), &clocks);
+        let spi1 = Spi::new(device.SPI1, (pa5, NoPin, pa7), spi1_mode, 500.kHz(), &clocks);
 
         // Create a delay abstraction based on SysTick
         let mut delay = ctx.core.SYST.delay(&clocks);
@@ -181,7 +181,7 @@ mod app {
             rprintln!("Power Down");
             wm8731.set_lineinpd(false);
             wm8731.set_micpd(false);
-            wm8731.set_adcpd(true);
+            wm8731.set_adcpd(false);
             wm8731.set_dacpd(false);
             wm8731.set_oscpd(false);
             wm8731.set_clkoutpd(false);
@@ -190,16 +190,17 @@ mod app {
             wm8731.set_both_headphone_out_vol(HpVoldB::MUTE, false);
             rprintln!("Unmute line in");
             wm8731.set_both_line_in_mute(false);
+            wm8731.set_both_line_in_vol(InVoldB::Z0DB);
             rprintln!("Anaoutput Path");
             wm8731.set_micboost(false);
             wm8731.set_mutemic(true);
             wm8731.set_insel(InselV::Line);
             wm8731.set_bypass(true);
-            wm8731.set_dacsel(true);
+            wm8731.set_dacsel(false);
             wm8731.set_sidetone(false);
             //digital_audio_path
-            wm8731.set_adchpd(false);
-            wm8731.set_dacmu(false);
+            //wm8731.set_adchpd(false);
+            //wm8731.set_dacmu(false);
             //wm8731.set_deemp(false);
             //digital_audio_interface
             wm8731.set_format(FormatV::I2s);
@@ -212,9 +213,9 @@ mod app {
             wm8731.set_sampling_rates(SamplingRates::ADC256_DAC256_A);
             wm8731.set_clkidiv2(false);
             wm8731.set_clkodiv2(false);
-            delay.delay_ms(10_u32);
             rprintln!("Out power up");
             wm8731.set_outpd(false);
+            delay.delay_ms(100_u32);
             rprintln!("Progressive HP vol");
             let mut vol = HpVoldB::MIN;
             while vol != HpVoldB::Z0DB {
@@ -299,6 +300,18 @@ mod app {
                     rprintln!("bypass {:?}", val);
                 }
             }
+
+            //dacmu
+            if let Some(val) = cmd.strip_prefix("dacmu") {
+                let val = val.trim();
+                if let Ok(val) = val.parse::<bool>() {
+                    wm8731.lock(|wm8731| {
+                        wm8731.set_dacmu(val);
+                    });
+                    rprintln!("dacmu {:?}", val);
+                }
+            }
+
             buf.fill(0);
         }
     }
@@ -344,17 +357,18 @@ mod app {
             *a = false;
             ret
         });
+        #[cfg(FALSE)]
         if activate {
             rprintln!("activation request");
-            wm8731.lock(|wm8731| {
-                wm8731.deactivate();
-                wm8731.activate();
-            });
             i2s2ext.lock(|i2s2ext| {
                 i2s2ext.i2scfgr.modify(|_, w| w.i2se().enabled());
             });
             i2s2.lock(|i2s2| {
                 i2s2.i2scfgr.modify(|_, w| w.i2se().enabled());
+            });
+            wm8731.lock(|wm8731| {
+                wm8731.deactivate();
+                //wm8731.activate();
             });
         }
 
