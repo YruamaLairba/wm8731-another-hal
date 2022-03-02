@@ -1,0 +1,26 @@
+[package]
+name = "wm8731-another-hal-test"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cortex-m = "0.7"
+#cortex-m-rt = "0.6.10"
+cortex-m-rtic = "1.0"
+#cortex-m-semihosting = "0.3.3"
+#panic-halt = "0.2.0"
+#panic-semihosting = "0.5.6"
+rtt-target = {version = "0.3", features = ["cortex-m"]}
+wm8731-another-hal = {path = ".."}
+
+[dependencies.stm32f4xx-hal]
+version = "0.12"
+features = ["rt", "stm32f411","i2s"] # replace the model of your microcontroller here
+
+# this lets you use `cargo fix`!
+[[bin]]
+name = "wm8731-another-hal-test"
+test = false
+bench = false
