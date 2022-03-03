@@ -253,6 +253,7 @@ impl HpVoldB {
 impl fmt::Display for HpVoldB {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let fmt = match self.inner {
+            0b0101111 => "Mute",
             0b0110000 => "-73",
             0b0110001 => "-72",
             0b0110010 => "-71",
@@ -333,9 +334,13 @@ impl fmt::Display for HpVoldB {
             0b1111101 => "+4",
             0b1111110 => "+5",
             0b1111111 => "+6",
-            _ => unreachable!(),
+            _ => "???", // Invalid value, better to not panick
         };
-        write!(f, "{}dB", fmt)
+        if self.inner > 0b0110000 {
+            write!(f, "{}dB", fmt)
+        } else {
+            write!(f, "{}", fmt)
+        }
     }
 }
 
