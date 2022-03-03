@@ -49,6 +49,7 @@ mod app {
     use super::I2sLocal;
     use super::Log;
     use super::MyWm8731;
+    use commands as cmd;
     use core::fmt::Write;
     use hal::gpio::NoPin;
     use hal::pac::Interrupt;
@@ -57,6 +58,7 @@ mod app {
     use hal::spi;
     use hal::spi::Spi;
     use rtt_target::{rprintln, rtt_init, set_print_channel};
+    use setup::*;
     use wm8731_another_hal::prelude::*;
     use wm8731_another_hal_test::*;
 
@@ -260,15 +262,7 @@ mod app {
 
             //hpvol ctrl
             if let Some(val) = cmd.strip_prefix("hpvol") {
-                let val = val.trim();
-                if let Ok(val) = val.parse::<i8>() {
-                    let vol = (val + (HpVoldB::Z0DB.into_raw() as i8)) as u8;
-                    let vol = HpVoldB::from_raw(vol);
-                    wm8731.lock(|wm8731| {
-                        wm8731.set_both_headphone_out_vol(vol, false);
-                    });
-                    rprintln!("hpvol {}", vol);
-                }
+                cmd::hpvol(&mut wm8731, val);
             }
 
             //insel
