@@ -267,49 +267,22 @@ mod app {
 
             //insel
             if let Some(val) = cmd.strip_prefix("insel") {
-                let val = val.trim();
-                let val2 = match val {
-                    "Line" => InselV::Line,
-                    "Mic" => InselV::Mic,
-                    _ => continue,
-                };
-                wm8731.lock(|wm8731| {
-                    wm8731.set_insel(val2);
-                });
-                rprintln!("insel {:?}", val);
+                cmd::insel(&mut wm8731, val);
             }
 
             //dacsel
             if let Some(val) = cmd.strip_prefix("dacsel") {
-                let val = val.trim();
-                if let Ok(val) = val.parse::<bool>() {
-                    wm8731.lock(|wm8731| {
-                        wm8731.set_dacsel(val);
-                    });
-                    rprintln!("dacsel {:?}", val);
-                }
+                cmd::dacsel(&mut wm8731, val);
             }
 
             //bypass
             if let Some(val) = cmd.strip_prefix("bypass") {
-                let val = val.trim();
-                if let Ok(val) = val.parse::<bool>() {
-                    wm8731.lock(|wm8731| {
-                        wm8731.set_bypass(val);
-                    });
-                    rprintln!("bypass {:?}", val);
-                }
+                cmd::bypass(&mut wm8731, val);
             }
 
             //dacmu
             if let Some(val) = cmd.strip_prefix("dacmu") {
-                let val = val.trim();
-                if let Ok(val) = val.parse::<bool>() {
-                    wm8731.lock(|wm8731| {
-                        wm8731.set_dacmu(val);
-                    });
-                    rprintln!("dacmu {:?}", val);
-                }
+                cmd::dacmu(&mut wm8731, val);
             }
 
             buf.fill(0);
