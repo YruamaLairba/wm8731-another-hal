@@ -258,31 +258,33 @@ mod app {
         let mut buf = [0u8; 512];
         loop {
             let bytes = input.read(&mut buf[..]);
-            let cmd = unsafe { core::str::from_utf8_unchecked(&buf[..bytes]) }.trim_end();
+            let cmds = unsafe { core::str::from_utf8_unchecked(&buf[..bytes]) }.trim_end();
+            let cmds = cmds.split(';');
+            for cmd in cmds {
+                //hpvol ctrl
+                if let Some(val) = cmd.strip_prefix("hpvol") {
+                    cmd::hpvol(&mut wm8731, val);
+                }
 
-            //hpvol ctrl
-            if let Some(val) = cmd.strip_prefix("hpvol") {
-                cmd::hpvol(&mut wm8731, val);
-            }
+                //insel
+                if let Some(val) = cmd.strip_prefix("insel") {
+                    cmd::insel(&mut wm8731, val);
+                }
 
-            //insel
-            if let Some(val) = cmd.strip_prefix("insel") {
-                cmd::insel(&mut wm8731, val);
-            }
+                //dacsel
+                if let Some(val) = cmd.strip_prefix("dacsel") {
+                    cmd::dacsel(&mut wm8731, val);
+                }
 
-            //dacsel
-            if let Some(val) = cmd.strip_prefix("dacsel") {
-                cmd::dacsel(&mut wm8731, val);
-            }
+                //bypass
+                if let Some(val) = cmd.strip_prefix("bypass") {
+                    cmd::bypass(&mut wm8731, val);
+                }
 
-            //bypass
-            if let Some(val) = cmd.strip_prefix("bypass") {
-                cmd::bypass(&mut wm8731, val);
-            }
-
-            //dacmu
-            if let Some(val) = cmd.strip_prefix("dacmu") {
-                cmd::dacmu(&mut wm8731, val);
+                //dacmu
+                if let Some(val) = cmd.strip_prefix("dacmu") {
+                    cmd::dacmu(&mut wm8731, val);
+                }
             }
 
             buf.fill(0);
