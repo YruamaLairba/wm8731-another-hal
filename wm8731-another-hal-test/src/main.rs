@@ -261,29 +261,16 @@ mod app {
             let cmds = unsafe { core::str::from_utf8_unchecked(&buf[..bytes]) }.trim_end();
             let cmds = cmds.split(';');
             for cmd in cmds {
-                //hpvol ctrl
-                if let Some(val) = cmd.strip_prefix("hpvol") {
-                    cmd::hpvol(&mut wm8731, val);
-                }
-
-                //insel
-                if let Some(val) = cmd.strip_prefix("insel") {
-                    cmd::insel(&mut wm8731, val);
-                }
-
-                //dacsel
-                if let Some(val) = cmd.strip_prefix("dacsel") {
-                    cmd::dacsel(&mut wm8731, val);
-                }
-
-                //bypass
-                if let Some(val) = cmd.strip_prefix("bypass") {
-                    cmd::bypass(&mut wm8731, val);
-                }
-
-                //dacmu
-                if let Some(val) = cmd.strip_prefix("dacmu") {
-                    cmd::dacmu(&mut wm8731, val);
+                let mut args = cmd.split_ascii_whitespace();
+                if let Some(cmd) = args.next() {
+                    match cmd {
+                        "hpvol" => cmd::hpvol(&mut wm8731, args),
+                        "insel" => cmd::insel(&mut wm8731, args),
+                        "dacsel" => cmd::dacsel(&mut wm8731, args),
+                        "bypass" => cmd::bypass(&mut wm8731, args),
+                        "dacmu" => cmd::dacmu(&mut wm8731, args),
+                        _ => (),
+                    }
                 }
             }
 
