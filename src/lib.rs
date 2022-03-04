@@ -32,6 +32,7 @@ use registers::power_down::PowerDown;
 use registers::reset::Reset;
 use registers::sampling::Sampling;
 
+/// The codec driver.
 #[derive(Debug)]
 pub struct Wm8731<I>
 where
@@ -50,6 +51,7 @@ where
     active: Active,
 }
 
+/// Constructor and Destructor.
 impl<I> Wm8731<I>
 where
     I: WriteFrame,
@@ -73,6 +75,17 @@ where
         codec
     }
 
+    /// Destroy the driver and release it's serial interface abstraction.
+    pub fn release(self) -> I {
+        self.interface
+    }
+}
+
+/// Active Control and Reset
+impl<I> Wm8731<I>
+where
+    I: WriteFrame,
+{
     /// Activate digital audio interface.
     pub fn activate(&mut self) {
         self.interface
@@ -103,6 +116,7 @@ where
     }
 }
 
+/// Left and Right Line In.
 impl<I> Wm8731<I>
 where
     I: WriteFrame,
@@ -150,7 +164,13 @@ where
         self.interface.write(self.left_line_in.to_frame());
         self
     }
+}
 
+/// Left and Right Headphone Out.
+impl<I> Wm8731<I>
+where
+    I: WriteFrame,
+{
     /// Set left headphone out volume.
     ///
     /// When `zero_cross` is `false`, volume is changed immediately.
@@ -208,7 +228,13 @@ where
         );
         self
     }
+}
 
+/// Analogue Audio Path Control.
+impl<I> Wm8731<I>
+where
+    I: WriteFrame,
+{
     pub fn set_micboost(&mut self, value: bool) -> &mut Self {
         self.analogue_audio_path.set_micboost(value);
         self.interface.write(self.analogue_audio_path.to_frame());
@@ -250,7 +276,13 @@ where
         self.interface.write(self.analogue_audio_path.to_frame());
         self
     }
+}
 
+/// Digital Audio Path Control.
+impl<I> Wm8731<I>
+where
+    I: WriteFrame,
+{
     ///  `true` disable ADC high pass filter. `false` enable ADC high pass filter.
     pub fn set_adchpd(&mut self, value: bool) -> &mut Self {
         self.digital_audio_path.set_adchpd(value);
@@ -281,7 +313,13 @@ where
         self.interface.write(self.digital_audio_path.to_frame());
         self
     }
+}
 
+/// Power Down Control.
+impl<I> Wm8731<I>
+where
+    I: WriteFrame,
+{
     pub fn set_lineinpd(&mut self, value: bool) -> &mut Self {
         self.power_down.set_lineinpd(value);
         self.interface.write(self.power_down.to_frame());
@@ -322,9 +360,13 @@ where
         self.interface.write(self.power_down.to_frame());
         self
     }
+}
 
-    // digital audio interface -- value stored only if inactive, sended only when activate
-
+/// Digital Audio Interface Format. Value stored only if inactive, sended during activation.
+impl<I> Wm8731<I>
+where
+    I: WriteFrame,
+{
     pub fn set_format(&mut self, value: FormatV) -> &mut Self {
         if !self.active.get() {
             self.digital_audio_interface.set_format(value);
@@ -361,9 +403,13 @@ where
         }
         self
     }
+}
 
-    // Sampling -- value stored only if inactive, sended only when activate
-
+/// Sampling Control. Value stored only if inactive, sended only during activation.
+impl<I> Wm8731<I>
+where
+    I: WriteFrame,
+{
     /// Set Sampling Rates.
     pub fn set_sampling_rates(&mut self, value: SamplingRates) -> &mut Self {
         if !self.active.get() {
