@@ -73,31 +73,30 @@ impl RightLineIn {
 
 impl<CHANNEL> LineIn<CHANNEL> {
     /// Get volume.
-    pub fn vol(&mut self) -> InVoldB {
+    pub fn vol(&self) -> InVoldB {
         unsafe { InVoldB::from_raw_unchecked((self.data & 0b11111) as _) }
     }
+    /// Get if Mute (`true`) or Unmute (`false`).
+    pub fn mute(&self) -> bool {
+        let pos = 7;
+        self.data & (1 << pos) == 1 << pos
+    }
+    /// Get if both channel are affected.
+    pub fn both(&self) -> bool {
+        let pos = 8;
+        self.data & (1 << pos) == 1 << pos
+    }
+
     /// Set volume.
     pub fn set_vol(&mut self, volume: InVoldB) -> &mut Self {
         self.data = self.data & !0b11111 | (volume.into_raw() as u16);
         self
-    }
-
-    /// Get if Mute (`true`) or Unmute (`false`).
-    pub fn mute(&mut self) -> bool {
-        let pos = 7;
-        self.data & (1 << pos) == 1 << pos
     }
     /// Set Mute (`true`) or Unmute (`false`).
     pub fn set_mute(&mut self, value: bool) -> &mut Self {
         let pos = 7;
         self.data = self.data & !(1 << pos) | (value as u16) << pos;
         self
-    }
-
-    /// Get if both channel are affected.
-    pub fn both(&mut self) -> bool {
-        let pos = 8;
-        self.data & (1 << pos) == 1 << pos
     }
     /// Set if both channel are affected.
     pub fn set_both(&mut self, value: bool) -> &mut Self {

@@ -86,6 +86,11 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
+    /// Returns `true` if the digital audio interface is running.
+    pub fn is_active(&self) -> bool {
+        self.active.get()
+    }
+
     /// Activate digital audio interface.
     pub fn activate(&mut self) {
         self.interface
@@ -121,6 +126,30 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
+    pub fn left_line_in_vol(&self) -> InVoldB {
+        self.left_line_in.vol()
+    }
+
+    pub fn right_line_in_vol(&self) -> InVoldB {
+        self.right_line_in.vol()
+    }
+
+    pub fn both_line_in_vol(&self) -> (InVoldB, InVoldB) {
+        (self.left_line_in.vol(), self.right_line_in.vol())
+    }
+
+    pub fn left_line_in_mute(&self) -> bool {
+        self.left_line_in.mute()
+    }
+
+    pub fn right_line_in_mute(&self) -> bool {
+        self.right_line_in.mute()
+    }
+
+    pub fn both_line_in_mute(&self) -> (bool, bool) {
+        (self.left_line_in.mute(), self.right_line_in.mute())
+    }
+
     pub fn set_left_line_in_vol(&mut self, volume: InVoldB) -> &mut Self {
         self.left_line_in.set_vol(volume);
         self.left_line_in.set_both(false);
@@ -171,6 +200,18 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
+    pub fn left_headphone_out_vol(&self) -> HpVoldB {
+        self.left_headphone_out_vol
+    }
+
+    pub fn right_headphone_out_vol(&self) -> HpVoldB {
+        self.right_headphone_out_vol
+    }
+
+    pub fn both_headphone_out_vol(&self) -> (HpVoldB, HpVoldB) {
+        (self.left_headphone_out_vol, self.right_headphone_out_vol)
+    }
+
     /// Set left headphone out volume.
     ///
     /// When `zero_cross` is `false`, volume is changed immediately.

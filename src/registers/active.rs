@@ -26,7 +26,7 @@ impl Active {
 }
 
 impl Active {
-    pub fn get(&mut self) -> bool {
+    pub fn get(&self) -> bool {
         self.data
     }
     pub fn set(&mut self, value: bool) -> &mut Self {
