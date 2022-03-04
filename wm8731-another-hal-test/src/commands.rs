@@ -37,6 +37,9 @@ pub fn hpvol<'a, I: WriteFrame>(
     }
 }
 
+bool_cmd!(micboost, set_micboost);
+bool_cmd!(mutemic, set_mutemic);
+
 pub fn insel<'a, I: WriteFrame>(
     mut wm8731: impl Mutex<T = Wm8731<I>>,
     mut opts: impl Iterator<Item = &'a str>,
@@ -54,6 +57,35 @@ pub fn insel<'a, I: WriteFrame>(
     }
 }
 
-bool_cmd!(dacsel, set_dacsel);
 bool_cmd!(bypass, set_bypass);
+bool_cmd!(dacsel, set_dacsel);
+bool_cmd!(sidetone, set_sidetone);
+
+//sideatt
+
+bool_cmd!(adchpd, set_adchpd);
 bool_cmd!(dacmu, set_dacmu);
+bool_cmd!(hpor, set_hpor);
+
+// Power down commands
+bool_cmd!(lineinpd, set_lineinpd);
+bool_cmd!(micpd, set_micpd);
+bool_cmd!(adcpd, set_adcpd);
+bool_cmd!(dacpd, set_dacpd);
+bool_cmd!(outpd, set_outpd);
+bool_cmd!(oscpd, set_oscpd);
+bool_cmd!(clkoutpd, set_clkoutpd);
+bool_cmd!(poweroff, set_poweroff);
+
+// digital audio format
+//format
+//iwl
+bool_cmd!(lrp, set_lrp);
+bool_cmd!(lrswap, set_lrswap);
+//ms
+bool_cmd!(bclkinv, set_bclkinv);
+
+// sampling control
+//sampling_rates
+bool_cmd!(clkidiv2, set_clkidiv2);
+bool_cmd!(clkodiv2, set_clkodiv2);
