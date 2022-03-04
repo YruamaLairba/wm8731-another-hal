@@ -32,8 +32,11 @@ pub fn hpvol<'a, I: WriteFrame>(
             wm8731.lock(|wm8731| {
                 wm8731.set_both_headphone_out_vol(vol, false);
             });
-            rprintln!("hpvol {}", vol);
+            rprintln!("hpvol set to {}", vol);
         }
+    } else {
+        let vol = wm8731.lock(|wm8731| wm8731.both_headphone_out_vol());
+        rprintln!("hpvol: left {}, right {}", vol.0, vol.1);
     }
 }
 
