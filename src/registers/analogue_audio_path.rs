@@ -31,17 +31,17 @@ impl AnalogueAudioPath {
 
 impl AnalogueAudioPath {
     /// Get if mic boost enabled.
-    pub fn micboost(&mut self) -> bool {
+    pub fn micboost(&self) -> bool {
         let pos = 0;
         self.data & (1 << pos) == 1 << pos
     }
     /// Get if mic is muted
-    pub fn mutemic(&mut self) -> bool {
+    pub fn mutemic(&self) -> bool {
         let pos = 1;
         self.data & (1 << pos) == 1 << pos
     }
     /// Get if ADC input is conected to line in or microphone.
-    pub fn insel(&mut self) -> InselV {
+    pub fn insel(&self) -> InselV {
         let pos = 2;
         match self.data & (1 << pos) == 1 << pos {
             false => InselV::Line,
@@ -49,22 +49,22 @@ impl AnalogueAudioPath {
         }
     }
     /// Get if line in are directly connected to outputs.
-    pub fn bypass(&mut self) -> bool {
+    pub fn bypass(&self) -> bool {
         let pos = 3;
         self.data & (1 << pos) == 1 << pos
     }
     /// Get if DAC are connected to outputs.
-    pub fn dacsel(&mut self) -> bool {
+    pub fn dacsel(&self) -> bool {
         let pos = 4;
         self.data & (1 << pos) == 1 << pos
     }
     /// Get if sidetone path is enabled. When enabled, microphone is directly connected to outputs.
-    pub fn sidetone(&mut self) -> bool {
+    pub fn sidetone(&self) -> bool {
         let pos = 5;
         self.data & (1 << pos) == 1 << pos
     }
     /// Get attenuation applyed to the sidetone path.
-    pub fn sideatt(&mut self) -> SideAttdB {
+    pub fn sideatt(&self) -> SideAttdB {
         let pos = 6;
         unsafe { SideAttdB::from_raw_unchecked(((self.data & (0b11 << pos)) >> pos) as _) }
     }

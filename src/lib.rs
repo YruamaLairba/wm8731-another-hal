@@ -276,6 +276,34 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
+    pub fn micboost(&self) -> bool {
+        self.analogue_audio_path.micboost()
+    }
+
+    pub fn mutemic(&self) -> bool {
+        self.analogue_audio_path.mutemic()
+    }
+
+    pub fn insel(&self) -> InselV {
+        self.analogue_audio_path.insel()
+    }
+
+    pub fn bypass(&self) -> bool {
+        self.analogue_audio_path.bypass()
+    }
+
+    pub fn dacsel(&self) -> bool {
+        self.analogue_audio_path.dacsel()
+    }
+
+    pub fn sidetone(&self) -> bool {
+        self.analogue_audio_path.sidetone()
+    }
+
+    pub fn sideatt(&self) -> SideAttdB {
+        self.analogue_audio_path.sideatt()
+    }
+
     pub fn set_micboost(&mut self, value: bool) -> &mut Self {
         self.analogue_audio_path.set_micboost(value);
         self.interface.write(self.analogue_audio_path.to_frame());
