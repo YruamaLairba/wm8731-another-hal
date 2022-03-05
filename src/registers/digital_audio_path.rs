@@ -25,11 +25,11 @@ impl DigitalAudioPath {
     }
 }
 impl DigitalAudioPath {
-    pub fn adchpd(&mut self) -> bool {
+    pub fn adchpd(&self) -> bool {
         let pos = 0;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn deemp(&mut self) -> DeempV {
+    pub fn deemp(&self) -> DeempV {
         let pos = 1;
         match (self.data & (0b11 << pos)) >> pos {
             0b00 => DeempV::Disable,
@@ -39,11 +39,11 @@ impl DigitalAudioPath {
             _ => unreachable!(),
         }
     }
-    pub fn dacmu(&mut self) -> bool {
+    pub fn dacmu(&self) -> bool {
         let pos = 3;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn hpor(&mut self) -> bool {
+    pub fn hpor(&self) -> bool {
         let pos = 4;
         self.data & (1 << pos) == 1 << pos
     }

@@ -352,7 +352,26 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
-    ///  `true` disable ADC high pass filter. `false` enable ADC high pass filter.
+    ///  `true` means ADC high pass filter disabled. `false` means ADC high pass filter enbaled.
+    pub fn adchpd(&self) -> bool {
+        self.digital_audio_path.adchpd()
+    }
+
+    #[cfg(doc)]
+    /// *Unavailable yet because it require some strategies to get meaningfull values.*
+    pub fn deemp(&self) -> bool {
+        todo!()
+    }
+
+    pub fn dacmu(&self) -> bool {
+        self.digital_audio_path.dacmu()
+    }
+
+    pub fn hpor(&self) -> bool {
+        self.digital_audio_path.hpor()
+    }
+
+    /// Disable/Enable ADC high pass filter. `true` to disable it, `false` to enable it.
     pub fn set_adchpd(&mut self, value: bool) -> &mut Self {
         self.digital_audio_path.set_adchpd(value);
         self.interface.write(self.digital_audio_path.to_frame());
