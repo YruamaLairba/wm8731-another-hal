@@ -26,35 +26,35 @@ impl PowerDown {
 }
 
 impl PowerDown {
-    pub fn lineinpd(&mut self) -> bool {
+    pub fn lineinpd(&self) -> bool {
         let pos = 0;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn micpd(&mut self) -> bool {
+    pub fn micpd(&self) -> bool {
         let pos = 1;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn adcpd(&mut self) -> bool {
+    pub fn adcpd(&self) -> bool {
         let pos = 2;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn dacpd(&mut self) -> bool {
+    pub fn dacpd(&self) -> bool {
         let pos = 3;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn outpd(&mut self) -> bool {
+    pub fn outpd(&self) -> bool {
         let pos = 4;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn oscpd(&mut self) -> bool {
+    pub fn oscpd(&self) -> bool {
         let pos = 5;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn clkoutpd(&mut self) -> bool {
+    pub fn clkoutpd(&self) -> bool {
         let pos = 6;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn poweroff(&mut self) -> bool {
+    pub fn poweroff(&self) -> bool {
         let pos = 7;
         self.data & (1 << pos) == 1 << pos
     }

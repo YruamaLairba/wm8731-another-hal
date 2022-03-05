@@ -408,6 +408,31 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
+    pub fn lineinpd(&self) -> bool {
+        self.power_down.lineinpd()
+    }
+    pub fn micpd(&self) -> bool {
+        self.power_down.micpd()
+    }
+    pub fn adcpd(&self) -> bool {
+        self.power_down.adcpd()
+    }
+    pub fn dacpd(&self) -> bool {
+        self.power_down.dacpd()
+    }
+    pub fn outpd(&self) -> bool {
+        self.power_down.outpd()
+    }
+    pub fn oscpd(&self) -> bool {
+        self.power_down.oscpd()
+    }
+    pub fn clkoutpd(&self) -> bool {
+        self.power_down.clkoutpd()
+    }
+    pub fn poweroff(&self) -> bool {
+        self.power_down.poweroff()
+    }
+
     pub fn set_lineinpd(&mut self, value: bool) -> &mut Self {
         self.power_down.set_lineinpd(value);
         self.interface.write(self.power_down.to_frame());
