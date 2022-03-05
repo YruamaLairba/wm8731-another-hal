@@ -41,8 +41,8 @@ where
     interface: I,
     left_line_in: LeftLineIn,
     right_line_in: RightLineIn,
-    left_headphone_out_vol: HpVoldB,
-    right_headphone_out_vol: HpVoldB,
+    left_hpvol: HpVoldB,
+    right_hpvol: HpVoldB,
     analogue_audio_path: AnalogueAudioPath,
     digital_audio_path: DigitalAudioPath,
     power_down: PowerDown,
@@ -62,8 +62,8 @@ where
             interface,
             left_line_in: Default::default(),
             right_line_in: Default::default(),
-            left_headphone_out_vol: Default::default(),
-            right_headphone_out_vol: Default::default(),
+            left_hpvol: Default::default(),
+            right_hpvol: Default::default(),
             analogue_audio_path: Default::default(),
             digital_audio_path: Default::default(),
             power_down: Default::default(),
@@ -110,8 +110,8 @@ where
         self.interface.write(Reset::new().to_frame());
         self.left_line_in = Default::default();
         self.right_line_in = Default::default();
-        self.left_headphone_out_vol = Default::default();
-        self.right_headphone_out_vol = Default::default();
+        self.left_hpvol = Default::default();
+        self.right_hpvol = Default::default();
         self.analogue_audio_path = Default::default();
         self.digital_audio_path = Default::default();
         self.power_down = Default::default();
@@ -126,45 +126,45 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
-    pub fn left_line_in_vol(&self) -> InVoldB {
+    pub fn left_invol(&self) -> InVoldB {
         self.left_line_in.vol()
     }
 
-    pub fn right_line_in_vol(&self) -> InVoldB {
+    pub fn right_invol(&self) -> InVoldB {
         self.right_line_in.vol()
     }
 
-    pub fn both_line_in_vol(&self) -> (InVoldB, InVoldB) {
+    pub fn both_invol(&self) -> (InVoldB, InVoldB) {
         (self.left_line_in.vol(), self.right_line_in.vol())
     }
 
-    pub fn left_line_in_mute(&self) -> bool {
+    pub fn left_inmute(&self) -> bool {
         self.left_line_in.mute()
     }
 
-    pub fn right_line_in_mute(&self) -> bool {
+    pub fn right_inmute(&self) -> bool {
         self.right_line_in.mute()
     }
 
-    pub fn both_line_in_mute(&self) -> (bool, bool) {
+    pub fn both_inmute(&self) -> (bool, bool) {
         (self.left_line_in.mute(), self.right_line_in.mute())
     }
 
-    pub fn set_left_line_in_vol(&mut self, volume: InVoldB) -> &mut Self {
+    pub fn set_left_invol(&mut self, volume: InVoldB) -> &mut Self {
         self.left_line_in.set_vol(volume);
         self.left_line_in.set_both(false);
         self.interface.write(self.left_line_in.to_frame());
         self
     }
 
-    pub fn set_right_line_in_vol(&mut self, volume: InVoldB) -> &mut Self {
+    pub fn set_right_invol(&mut self, volume: InVoldB) -> &mut Self {
         self.right_line_in.set_vol(volume);
         self.right_line_in.set_both(false);
         self.interface.write(self.right_line_in.to_frame());
         self
     }
 
-    pub fn set_both_line_in_vol(&mut self, volume: InVoldB) -> &mut Self {
+    pub fn set_both_invol(&mut self, volume: InVoldB) -> &mut Self {
         self.left_line_in.set_vol(volume);
         self.right_line_in.set_vol(volume);
         self.left_line_in.set_both(true);
@@ -172,21 +172,21 @@ where
         self
     }
 
-    pub fn set_left_line_in_mute(&mut self, mute: bool) -> &mut Self {
+    pub fn set_left_inmute(&mut self, mute: bool) -> &mut Self {
         self.left_line_in.set_mute(mute);
         self.left_line_in.set_both(false);
         self.interface.write(self.left_line_in.to_frame());
         self
     }
 
-    pub fn set_right_line_in_mute(&mut self, mute: bool) -> &mut Self {
+    pub fn set_right_inmute(&mut self, mute: bool) -> &mut Self {
         self.right_line_in.set_mute(mute);
         self.right_line_in.set_both(false);
         self.interface.write(self.right_line_in.to_frame());
         self
     }
 
-    pub fn set_both_line_in_mute(&mut self, mute: bool) -> &mut Self {
+    pub fn set_both_inmute(&mut self, mute: bool) -> &mut Self {
         self.left_line_in.set_mute(mute);
         self.right_line_in.set_mute(mute);
         self.left_line_in.set_both(true);
@@ -200,31 +200,31 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
-    pub fn left_headphone_out_vol(&self) -> HpVoldB {
-        self.left_headphone_out_vol
+    pub fn left_hpvol(&self) -> HpVoldB {
+        self.left_hpvol
     }
 
-    pub fn right_headphone_out_vol(&self) -> HpVoldB {
-        self.right_headphone_out_vol
+    pub fn right_hpvol(&self) -> HpVoldB {
+        self.right_hpvol
     }
 
-    pub fn both_headphone_out_vol(&self) -> (HpVoldB, HpVoldB) {
-        (self.left_headphone_out_vol, self.right_headphone_out_vol)
+    pub fn both_hpvol(&self) -> (HpVoldB, HpVoldB) {
+        (self.left_hpvol, self.right_hpvol)
     }
 
     /// Set left headphone out volume.
     ///
-    /// When `zero_cross` is `false`, volume is changed immediately.
+    /// When `zcen` is `false`, volume is changed immediately.
     ///
-    /// When `zero_cross` is `true`, volume is set when signal is close to zero to avoid audible
+    /// When `zcen` is `true`, volume is set when signal is close to zero to avoid audible
     /// noise. The volume may never change if signal at gain stage input get never close to +/-
     /// 20mv.
-    pub fn set_left_headphone_out_vol(&mut self, volume: HpVoldB, zero_cross: bool) -> &mut Self {
-        self.left_headphone_out_vol = volume;
+    pub fn set_left_hpvol(&mut self, volume: HpVoldB, zcen: bool) -> &mut Self {
+        self.left_hpvol = volume;
         self.interface.write(
             LeftHeadphoneOut::default()
                 .set_both(false)
-                .set_zc(zero_cross)
+                .set_zcen(zcen)
                 .set_vol(volume)
                 .to_frame(),
         );
@@ -233,17 +233,17 @@ where
 
     /// Set right headphone out volume.
     ///
-    /// When `zero_cross` is `false`, volume is changed immediately.
+    /// When `zcen` is `false`, volume is changed immediately.
     ///
-    /// When `zero_cross` is `true`, volume is set when signal is close to zero to avoid audible
+    /// When `zcen` is `true`, volume is set when signal is close to zero to avoid audible
     /// noise. The volume may never change if signal at gain stage input get never close to +/-
     /// 20mv.
-    pub fn set_right_headphone_out_vol(&mut self, volume: HpVoldB, zero_cross: bool) -> &mut Self {
-        self.right_headphone_out_vol = volume;
+    pub fn set_right_hpvol(&mut self, volume: HpVoldB, zcen: bool) -> &mut Self {
+        self.right_hpvol = volume;
         self.interface.write(
             RightHeadphoneOut::default()
                 .set_both(false)
-                .set_zc(zero_cross)
+                .set_zcen(zcen)
                 .set_vol(volume)
                 .to_frame(),
         );
@@ -252,18 +252,18 @@ where
 
     /// Set both headphone out volume.
     ///
-    /// When `zero_cross` is `false`, volume is changed immediately.
+    /// When `zcen` is `false`, volume is changed immediately.
     ///
-    /// When `zero_cross` is `true`, volume is set when signal is close to zero to avoid audible
+    /// When `zcen` is `true`, volume is set when signal is close to zero to avoid audible
     /// noise. The volume may never change if signal at gain stage input get never close to +/-
     /// 20mv.
-    pub fn set_both_headphone_out_vol(&mut self, volume: HpVoldB, zero_cross: bool) -> &mut Self {
-        self.left_headphone_out_vol = volume;
-        self.right_headphone_out_vol = volume;
+    pub fn set_both_hpvol(&mut self, volume: HpVoldB, zcen: bool) -> &mut Self {
+        self.left_hpvol = volume;
+        self.right_hpvol = volume;
         self.interface.write(
             LeftHeadphoneOut::default()
                 .set_both(true)
-                .set_zc(zero_cross)
+                .set_zcen(zcen)
                 .set_vol(volume)
                 .to_frame(),
         );

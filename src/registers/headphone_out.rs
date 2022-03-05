@@ -77,7 +77,7 @@ impl<CHANNEL> HeadphoneOut<CHANNEL> {
         unsafe { HpVoldB::from_raw_unchecked((self.data & 0b0111_1111) as _) }
     }
     /// Get if volume update on zero cross.
-    pub fn zc(&mut self) -> bool {
+    pub fn zcen(&mut self) -> bool {
         let pos = 7;
         self.data & (1 << pos) == 1 << pos
     }
@@ -93,7 +93,7 @@ impl<CHANNEL> HeadphoneOut<CHANNEL> {
         self
     }
     /// Set if volume will updated on zero cross.
-    pub fn set_zc(&mut self, value: bool) -> &mut Self {
+    pub fn set_zcen(&mut self, value: bool) -> &mut Self {
         let pos = 7;
         self.data = self.data & !(1 << pos) | (value as u16) << pos;
         self
