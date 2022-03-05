@@ -27,15 +27,15 @@ impl Sampling {
 }
 impl Sampling {
     /// Get Sampling Rate. Replace USB/NORMAL, BOSR and SR getters.
-    pub fn sampling_rates(&mut self) -> SamplingRates {
+    pub fn sampling_rates(&self) -> SamplingRates {
         let pos = 0;
         unsafe { SamplingRates::from_raw_unchecked((self.data & (0b111111 << pos)) >> pos) }
     }
-    pub fn clkidiv2(&mut self) -> bool {
+    pub fn clkidiv2(&self) -> bool {
         let pos = 6;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn clkodiv2(&mut self) -> bool {
+    pub fn clkodiv2(&self) -> bool {
         let pos = 7;
         self.data & (1 << pos) == 1 << pos
     }

@@ -542,6 +542,17 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
+    /// Get Sampling Rates configuration.
+    pub fn sampling_rates(&self) -> SamplingRates {
+        self.sampling.sampling_rates()
+    }
+    pub fn clkidiv2(&self) -> bool {
+        self.sampling.clkidiv2()
+    }
+    pub fn clkodiv2(&self) -> bool {
+        self.sampling.clkodiv2()
+    }
+
     /// Set Sampling Rates.
     pub fn set_sampling_rates(&mut self, value: SamplingRates) -> &mut Self {
         if !self.active.get() {
