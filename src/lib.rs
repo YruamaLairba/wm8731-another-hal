@@ -480,6 +480,25 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
+    pub fn format(&self) -> FormatV {
+        self.digital_audio_interface.format()
+    }
+    pub fn iwl(&self) -> IwlV {
+        self.digital_audio_interface.iwl()
+    }
+    pub fn lrp(&self) -> bool {
+        self.digital_audio_interface.lrp()
+    }
+    pub fn lrswap(&self) -> bool {
+        self.digital_audio_interface.lrswap()
+    }
+    pub fn ms(&self) -> MsV {
+        self.digital_audio_interface.ms()
+    }
+    pub fn bclkinv(&self) -> bool {
+        self.digital_audio_interface.bclkinv()
+    }
+
     pub fn set_format(&mut self, value: FormatV) -> &mut Self {
         if !self.active.get() {
             self.digital_audio_interface.set_format(value);

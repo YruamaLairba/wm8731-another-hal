@@ -25,7 +25,7 @@ impl DigitalAudioInterface {
     }
 }
 impl DigitalAudioInterface {
-    pub fn format(&mut self) -> FormatV {
+    pub fn format(&self) -> FormatV {
         let pos = 0;
         match (self.data & (0b11 << pos)) >> pos {
             0b11 => FormatV::Dsp,
@@ -35,7 +35,7 @@ impl DigitalAudioInterface {
             _ => unreachable!(),
         }
     }
-    pub fn iwl(&mut self) -> IwlV {
+    pub fn iwl(&self) -> IwlV {
         let pos = 2;
         match (self.data & (0b11 << pos)) >> pos {
             0b11 => IwlV::Iwl32Bits,
@@ -45,22 +45,22 @@ impl DigitalAudioInterface {
             _ => unreachable!(),
         }
     }
-    pub fn lrp(&mut self) -> bool {
+    pub fn lrp(&self) -> bool {
         let pos = 4;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn lrswap(&mut self) -> bool {
+    pub fn lrswap(&self) -> bool {
         let pos = 5;
         self.data & (1 << pos) == 1 << pos
     }
-    pub fn ms(&mut self) -> MsV {
+    pub fn ms(&self) -> MsV {
         let pos = 6;
         match self.data & (1 << pos) == 1 << pos {
             true => MsV::Master,
             false => MsV::Slave,
         }
     }
-    pub fn bclkinv(&mut self) -> bool {
+    pub fn bclkinv(&self) -> bool {
         let pos = 7;
         self.data & (1 << pos) == 1 << pos
     }
