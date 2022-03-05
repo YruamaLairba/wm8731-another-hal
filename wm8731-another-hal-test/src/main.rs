@@ -264,6 +264,7 @@ mod app {
                 let mut args = cmd.split_ascii_whitespace();
                 if let Some(cmd) = args.next() {
                     match cmd {
+                        "invol" => cmd::invol(&mut wm8731, args),
                         "hpvol" => cmd::hpvol(&mut wm8731, args),
                         "micboost" => cmd::micboost(&mut wm8731, args),
                         "mutemic" => cmd::mutemic(&mut wm8731, args),

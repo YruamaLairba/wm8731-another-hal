@@ -21,6 +21,26 @@ macro_rules! bool_cmd {
     };
 }
 
+pub fn invol<'a, I: WriteFrame>(
+    mut wm8731: impl Mutex<T = Wm8731<I>>,
+    mut opts: impl Iterator<Item = &'a str>,
+) {
+    if let Some(val) = opts.next() {
+        if let Ok(val) = val.parse::<f32>() {
+            let coef = 2. / 3.;
+            let vol = (val * coef + (InVoldB::Z0DB.into_raw() as f32)) as u8;
+            let vol = InVoldB::from_raw(vol);
+            wm8731.lock(|wm8731| {
+                wm8731.set_both_line_in_vol(vol);
+            });
+            rprintln!("invol set to {}", vol);
+        }
+    } else {
+        let vol = wm8731.lock(|wm8731| wm8731.both_line_in_vol());
+        rprintln!("invol: left {}, right {}", vol.0, vol.1);
+    }
+}
+
 pub fn hpvol<'a, I: WriteFrame>(
     mut wm8731: impl Mutex<T = Wm8731<I>>,
     mut opts: impl Iterator<Item = &'a str>,
