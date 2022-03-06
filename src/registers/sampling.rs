@@ -107,6 +107,52 @@ impl Default for SamplingRates {
     }
 }
 
+impl core::fmt::Display for SamplingRates {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match *self {
+            SamplingRates::ADC256_DAC256_A => f.write_str("ADC256_DAC256_A"),
+            SamplingRates::ADC256_DAC1536_A => f.write_str("ADC256_DAC1536_A"),
+            SamplingRates::ADC1536_DAC256_A => f.write_str("ADC1536_DAC256_A"),
+            SamplingRates::ADC1536_DAC1536_A => f.write_str("ADC1536_DAC1536_A"),
+            SamplingRates::ADC384_DAC384_A => f.write_str("ADC384_DAC384_A"),
+            SamplingRates::ADC128_DAC128_A => f.write_str("ADC128_DAC128_A"),
+
+            SamplingRates::ADC256_DAC256_B => f.write_str("ADC256_DAC256_B"),
+            SamplingRates::ADC256_DAC1408_B => f.write_str("ADC256_DAC1408_B"),
+            SamplingRates::ADC1408_DAC256_B => f.write_str("ADC1408_DAC256_B"),
+            SamplingRates::ADC1408_DAC1408_B => f.write_str("ADC1408_DAC1408_B"),
+            SamplingRates::ADC128_DAC128_B => f.write_str("ADC128_DAC128_B"),
+
+            SamplingRates::ADC384_DAC384_C => f.write_str("ADC384_DAC384_C"),
+            SamplingRates::ADC384_DAC2304_C => f.write_str("ADC384_DAC2304_C"),
+            SamplingRates::ADC2304_DAC384_C => f.write_str("ADC2304_DAC384_C"),
+            SamplingRates::ADC2304_DAC2304_C => f.write_str("ADC2304_DAC2304_C"),
+            SamplingRates::ADC576_DAC576_C => f.write_str("ADC576_DAC576_C"),
+            SamplingRates::ADC192_DAC192_C => f.write_str("ADC192_DAC192_C"),
+
+            SamplingRates::ADC384_DAC384_D => f.write_str("ADC384_DAC384_D"),
+            SamplingRates::ADC384_DAC2112_D => f.write_str("ADC384_DAC2112_D"),
+            SamplingRates::ADC2112_DAC384_D => f.write_str("ADC2112_DAC384_D"),
+            SamplingRates::ADC2112_DAC2112_D => f.write_str("ADC2112_DAC2112_D"),
+            SamplingRates::ADC192_DAC192_D => f.write_str("ADC192_DAC192_D"),
+
+            SamplingRates::ADC250_DAC250_U => f.write_str("ADC250_DAC250_U"),
+            SamplingRates::ADC272_DAC272_U => f.write_str("ADC272_DAC272_U"),
+            SamplingRates::ADC250_DAC1500_U => f.write_str("ADC250_DAC1500_U"),
+            SamplingRates::ADC272_DAC1496_U => f.write_str("ADC272_DAC1496_U"),
+            SamplingRates::ADC1500_DAC250_U => f.write_str("ADC1500_DAC250_U"),
+            SamplingRates::ADC1496_DAC272_U => f.write_str("ADC1496_DAC272_U"),
+            SamplingRates::ADC1500_DAC1500_U => f.write_str("ADC1500_DAC1500_U"),
+            SamplingRates::ADC1496_DAC1496_U => f.write_str("ADC1496_DAC1496_U"),
+            SamplingRates::ADC375_DAC375_U => f.write_str("ADC375_DAC375_U"),
+            SamplingRates::ADC125_DAC125_U => f.write_str("ADC125_DAC125_U"),
+            SamplingRates::ADC136_DAC136_U => f.write_str("ADC136_DAC136_U"),
+
+            _ => f.write_str("ADC???_DAC???_?"),
+        }
+    }
+}
+
 impl SamplingRates {
     /// Instantiate from raw bits
     ///
