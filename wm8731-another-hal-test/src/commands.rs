@@ -17,6 +17,9 @@ macro_rules! bool_cmd {
                     });
                     rprintln!(concat!(stringify!($name), " {:?}"), val);
                 }
+            } else {
+                let val = wm8731.lock(|wm8731| wm8731.$name());
+                rprintln!(concat!(stringify!($name), "is {}"), val);
             }
         }
     };
@@ -164,16 +167,22 @@ pub fn insel<'a, I: WriteFrame>(
     mut wm8731: impl Mutex<T = Wm8731<I>>,
     mut opts: impl Iterator<Item = &'a str>,
 ) {
+    use InselV::*;
     if let Some(val) = opts.next() {
         let val2 = match val {
-            "Line" => InselV::Line,
-            "Mic" => InselV::Mic,
+            "line" => Line,
+            "mic" => Mic,
             _ => return,
         };
         wm8731.lock(|wm8731| {
             wm8731.set_insel(val2);
         });
-        rprintln!("insel {:?}", val);
+        rprintln!("insel {}", val);
+    } else {
+        match wm8731.lock(|wm8731| wm8731.insel()) {
+            Line => rprintln!("insel is line"),
+            Mic => rprintln!("insel is mic"),
+        }
     }
 }
 
