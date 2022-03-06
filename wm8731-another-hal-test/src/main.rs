@@ -391,10 +391,15 @@ mod app {
                 let _ = i2s2ext_sr_read.chside().bit();
                 let min = i16::MIN / 4;
                 let max = i16::MAX / 4;
-                let step = cx.local.i2s.step as i16;
+                let mut step = cx.local.i2s.step;
                 let per = 360;
-                let val = min + max / per * step - min / per * step;
-                cx.local.i2s.step += 1;
+                let val = if step < per { min } else { max };
+
+                step += 1;
+                if step >= per {
+                    step = 0
+                }
+                cx.local.i2s.step = step;
 
                 i2s2ext.dr.write(|w| w.dr().bits(val as _));
                 //if cx.local.i2s.step >= per as u16 {
