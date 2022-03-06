@@ -97,6 +97,8 @@ impl DigitalAudioInterface {
     }
 }
 
+/// Audio data format selection.
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub enum FormatV {
     Dsp = 0b11,
     I2s = 0b10,
@@ -104,6 +106,8 @@ pub enum FormatV {
     RigthJustified = 0b00,
 }
 
+/// Input audio data bit length selection.
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub enum IwlV {
     Iwl32Bits = 0b11,
     Iwl24Bits = 0b10,
@@ -111,6 +115,8 @@ pub enum IwlV {
     Iwl16Bits = 0b00,
 }
 
+/// Master or slave mode selection.
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub enum MsV {
     Master = 0b1,
     Slave = 0b0,

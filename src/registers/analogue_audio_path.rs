@@ -114,6 +114,7 @@ impl AnalogueAudioPath {
 }
 
 /// Inputs to ADC selection.
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub enum InselV {
     Line = 0,
     Mic = 1,
