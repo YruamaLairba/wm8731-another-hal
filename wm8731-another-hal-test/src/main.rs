@@ -251,9 +251,11 @@ mod app {
         )
     }
 
-    #[idle(shared = [wm8731], local = [input])]
+    #[idle(shared = [wm8731, i2s2, i2s2ext], local = [input])]
     fn idle(cx: idle::Context) -> ! {
         let mut wm8731 = cx.shared.wm8731;
+        let mut i2s2 = cx.shared.i2s2;
+        let mut i2s2ext = cx.shared.i2s2ext;
         let input = cx.local.input;
         let mut buf = [0u8; 512];
         loop {
@@ -264,6 +266,12 @@ mod app {
                 let mut args = cmd.split_ascii_whitespace();
                 if let Some(cmd) = args.next() {
                     match cmd {
+                        "is_enabled" => cmd::is_enabled(&mut wm8731, &mut i2s2, &mut i2s2ext, args),
+                        "enable" => cmd::enable(&mut wm8731, &mut i2s2, &mut i2s2ext, args),
+                        "disable" => cmd::disable(&mut wm8731, &mut i2s2, &mut i2s2ext, args),
+                        "is_active" => cmd::is_active(&mut wm8731),
+                        "activate" => cmd::activate(&mut wm8731),
+                        "deactivate" => cmd::deactivate(&mut wm8731),
                         "invol" => cmd::invol(&mut wm8731, args),
                         "hpvol" => cmd::hpvol(&mut wm8731, args),
                         "micboost" => cmd::micboost(&mut wm8731, args),
