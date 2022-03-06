@@ -24,6 +24,128 @@ macro_rules! bool_cmd {
         }
     };
 }
+pub fn status<I: WriteFrame + core::fmt::Debug>(
+    mut wm8731: impl Mutex<T = Wm8731<I>>,
+    mut i2s: impl Mutex<T = SPI2>,
+    mut i2sext: impl Mutex<T = I2S2EXT>,
+) {
+    match i2s.lock(|i2s| i2s.i2scfgr.read().i2se().is_enabled()) {
+        true => rprintln!("i2s is enabled"),
+        false => rprintln!("i2s is disabled"),
+    }
+    match i2sext.lock(|i2sext| i2sext.i2scfgr.read().i2se().is_enabled()) {
+        true => rprintln!("i2sext is enabled"),
+        false => rprintln!("i2sext is disabled"),
+    }
+    match wm8731.lock(|wm8731| wm8731.is_active()) {
+        true => rprintln!("wm8731 is active"),
+        false => rprintln!("wm8731 is inactive"),
+    }
+    rprintln!(
+        "left in: vol: {}, mute: {}",
+        wm8731.lock(|wm8731| wm8731.left_invol()),
+        wm8731.lock(|wm8731| wm8731.left_inmute())
+    );
+    rprintln!(
+        "right in: vol: {}, mute: {}",
+        wm8731.lock(|wm8731| wm8731.right_invol()),
+        wm8731.lock(|wm8731| wm8731.right_inmute())
+    );
+    rprintln!(
+        "hpvol: left: {}, right:{}",
+        wm8731.lock(|wm8731| wm8731.left_hpvol()),
+        wm8731.lock(|wm8731| wm8731.right_hpvol()),
+    );
+
+    //Analogue audio path
+    let (micboost, mutemic, insel, bypass, dacsel, sidetone, sideatt) = wm8731.lock(|wm8731| {
+        (
+            wm8731.micboost(),
+            wm8731.mutemic(),
+            wm8731.insel(),
+            wm8731.bypass(),
+            wm8731.dacsel(),
+            wm8731.sidetone(),
+            wm8731.sideatt(),
+        )
+    });
+    rprintln!(
+        "micboost: {}, mutemic: {}, insel: {:?}, bypass: {}, dacsel {}, sidetone {}, sideatt {}",
+        micboost,
+        mutemic,
+        insel,
+        bypass,
+        dacsel,
+        sidetone,
+        sideatt
+    );
+
+    //Digital audio path
+    let (adchpd, dacmu, hpor) =
+        wm8731.lock(|wm8731| (wm8731.adchpd(), wm8731.dacmu(), wm8731.hpor()));
+    rprintln!("adchpd: {}, dacmu: {}, hpor: {}", adchpd, dacmu, hpor);
+
+    //Power Down Control
+    let (lineinpd, micpd, adcpd, dacpd, outpd, oscpd, clkoutpd, poweroff) = wm8731.lock(|wm8731| {
+        (
+            wm8731.lineinpd(),
+            wm8731.micpd(),
+            wm8731.adcpd(),
+            wm8731.dacpd(),
+            wm8731.outpd(),
+            wm8731.oscpd(),
+            wm8731.clkoutpd(),
+            wm8731.poweroff(),
+        )
+    });
+    rprintln!(
+        "lineinpd: {}, micpd: {}, adcpd: {}, dacpd: {}, outpd: {}, oscpd: {}, clkoutpd: {}, poweroff: {}",
+        lineinpd,
+        micpd,
+        adcpd,
+        dacpd,
+        outpd,
+        oscpd,
+        clkoutpd,
+        poweroff
+    );
+
+    // Digital Audio Interface Format
+    let (format, iwl, lrp, lrswap, ms, bclkinv) = wm8731.lock(|wm8731| {
+        (
+            wm8731.format(),
+            wm8731.iwl(),
+            wm8731.lrp(),
+            wm8731.lrswap(),
+            wm8731.ms(),
+            wm8731.bclkinv(),
+        )
+    });
+    rprintln!(
+        "format: {:?}, iwl: {:?}, lrp: {}, lrswap: {}, ms: {:?}, bclkinv: {}",
+        format,
+        iwl,
+        lrp,
+        lrswap,
+        ms,
+        bclkinv
+    );
+
+    // Sampling Control
+    let (sampling_rates, clkidiv2, clkodiv2) = wm8731.lock(|wm8731| {
+        (
+            wm8731.sampling_rates(),
+            wm8731.clkidiv2(),
+            wm8731.clkodiv2(),
+        )
+    });
+    rprintln!(
+        "sampling_rates: {}, clkidiv2: {}, clkodiv2: {}",
+        sampling_rates,
+        clkidiv2,
+        clkodiv2
+    );
+}
 
 pub fn is_enabled<'a, I: WriteFrame>(
     mut wm8731: impl Mutex<T = Wm8731<I>>,

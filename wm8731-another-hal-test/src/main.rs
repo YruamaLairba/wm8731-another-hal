@@ -90,7 +90,7 @@ mod app {
         let channels = rtt_init! {
             up: {
                 0: {
-                    size: 128
+                    size: 1024
                     name: "Term"
                 }
                 1: {
@@ -266,6 +266,7 @@ mod app {
                 let mut args = cmd.split_ascii_whitespace();
                 if let Some(cmd) = args.next() {
                     match cmd {
+                        "status" => cmd::status(&mut wm8731, &mut i2s2, &mut i2s2ext),
                         "is_enabled" => cmd::is_enabled(&mut wm8731, &mut i2s2, &mut i2s2ext, args),
                         "enable" => cmd::enable(&mut wm8731, &mut i2s2, &mut i2s2ext, args),
                         "disable" => cmd::disable(&mut wm8731, &mut i2s2, &mut i2s2ext, args),
