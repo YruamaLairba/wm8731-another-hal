@@ -31,12 +31,12 @@ pub fn invol<'a, I: WriteFrame>(
             let vol = (val * coef + (InVoldB::Z0DB.into_raw() as f32)) as u8;
             let vol = InVoldB::from_raw(vol);
             wm8731.lock(|wm8731| {
-                wm8731.set_both_line_in_vol(vol);
+                wm8731.set_both_invol(vol);
             });
             rprintln!("invol set to {}", vol);
         }
     } else {
-        let vol = wm8731.lock(|wm8731| wm8731.both_line_in_vol());
+        let vol = wm8731.lock(|wm8731| wm8731.both_invol());
         rprintln!("invol: left {}, right {}", vol.0, vol.1);
     }
 }
@@ -50,12 +50,12 @@ pub fn hpvol<'a, I: WriteFrame>(
             let vol = (val + (HpVoldB::Z0DB.into_raw() as i8)) as u8;
             let vol = HpVoldB::from_raw(vol);
             wm8731.lock(|wm8731| {
-                wm8731.set_both_headphone_out_vol(vol, false);
+                wm8731.set_both_hpvol(vol, false);
             });
             rprintln!("hpvol set to {}", vol);
         }
     } else {
-        let vol = wm8731.lock(|wm8731| wm8731.both_headphone_out_vol());
+        let vol = wm8731.lock(|wm8731| wm8731.both_hpvol());
         rprintln!("hpvol: left {}, right {}", vol.0, vol.1);
     }
 }

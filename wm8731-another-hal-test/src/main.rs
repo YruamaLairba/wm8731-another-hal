@@ -195,10 +195,10 @@ mod app {
             wm8731.set_clkoutpd(false);
             wm8731.set_poweroff(false);
             rprintln!("Mute headphone");
-            wm8731.set_both_headphone_out_vol(HpVoldB::MUTE, false);
+            wm8731.set_both_hpvol(HpVoldB::MUTE, false);
             rprintln!("Unmute line in");
-            wm8731.set_both_line_in_mute(false);
-            wm8731.set_both_line_in_vol(InVoldB::Z0DB);
+            wm8731.set_both_inmute(false);
+            wm8731.set_both_invol(InVoldB::Z0DB);
             rprintln!("Anaoutput Path");
             wm8731.set_micboost(false);
             wm8731.set_mutemic(true);
@@ -228,7 +228,7 @@ mod app {
             let mut vol = HpVoldB::MIN;
             while vol != HpVoldB::Z0DB {
                 vol.increase();
-                wm8731.set_both_headphone_out_vol(vol, true);
+                wm8731.set_both_hpvol(vol, true);
                 delay.delay_ms(10_u32);
             }
         }
