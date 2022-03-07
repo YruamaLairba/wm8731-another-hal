@@ -58,12 +58,11 @@ impl DigitalAudioPath {
         self.data = self.data & !(0b11 << pos) | (value as u8) << pos;
         self
     }
-    #[doc = concat!(warning!("May be buggy")," DAC Soft Mute Control")]
+    /// DAC Soft Mute Control. Does'nt work correctly with some sampling configurations.
     ///
-    /// **May be buggy:** With some chips, actual behavior doesn't correspond to the datasheet
-    /// description and may interfere with `DACSEL`, `BYPASS` and `SIDETONE` setting. A workaround
-    /// consist to always resend an analogue path control command right after a digital path
-    /// control command.
+    /// DAC Soft Mute Control doesn't work correctly when `SR` is `0b0111` or `0b1111`. This concern
+    /// sampling configurations where `core clock` / `sampling frequency` is less or equal to
+    /// 192.
     pub fn set_dacmu(&mut self, value: bool) -> &mut Self {
         let pos = 3;
         self.data = self.data & !(1 << pos) | (value as u8) << pos;
