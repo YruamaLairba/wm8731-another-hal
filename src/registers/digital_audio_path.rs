@@ -20,7 +20,7 @@ impl DigitalAudioPath {
     }
     pub fn to_frame(&self) -> Frame {
         Frame {
-            data: 0b100 << 9 | self.data as u16,
+            data: 0b101 << 9 | self.data as u16,
         }
     }
 }
