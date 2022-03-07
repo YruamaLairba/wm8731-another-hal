@@ -19,7 +19,7 @@ macro_rules! bool_cmd {
                 }
             } else {
                 let val = wm8731.lock(|wm8731| wm8731.$name());
-                rprintln!(concat!(stringify!($name), "is {}"), val);
+                rprintln!(concat!(stringify!($name), " is {}"), val);
             }
         }
     };
@@ -260,6 +260,23 @@ pub fn invol<'a, I: WriteFrame>(
     } else {
         let vol = wm8731.lock(|wm8731| wm8731.both_invol());
         rprintln!("invol: left {}, right {}", vol.0, vol.1);
+    }
+}
+
+pub fn inmute<'a, I: WriteFrame>(
+    mut wm8731: impl Mutex<T = Wm8731<I>>,
+    mut opts: impl Iterator<Item = &'a str>,
+) {
+    if let Some(val) = opts.next() {
+        if let Ok(val) = val.parse::<bool>() {
+            wm8731.lock(|wm8731| {
+                wm8731.set_both_inmute(val);
+            });
+            rprintln!("inmute {:?}", val);
+        }
+    } else {
+        let val = wm8731.lock(|wm8731| wm8731.both_inmute());
+        rprintln!("inmute: left {}, right {}", val.0, val.1);
     }
 }
 

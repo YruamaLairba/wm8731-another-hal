@@ -36,6 +36,20 @@ pub enum Log {
     I16(i16),
 }
 
+use core::fmt::Write;
+impl Log {
+    fn log(&self, chan: &mut rtt_target::UpChannel) {
+        match self {
+            Log::Str(val) => writeln!(chan, "{}", val).unwrap_or_default(),
+            Log::U8(val) => writeln!(chan, "{:08b}", val).unwrap_or_default(),
+            Log::U16(val) => writeln!(chan, "{:02x}", val).unwrap_or_default(),
+            Log::I8(val) => writeln!(chan, "{:08b}", val).unwrap_or_default(),
+            Log::I16(val) => writeln!(chan, "{:02x}", val).unwrap_or_default(),
+            //_ => writeln!(chan, "unimplemented").unwrap_or_default(),
+        }
+    }
+}
+
 #[derive(Default, Debug, Clone, Copy)]
 pub struct I2sLocal {
     pub step: u16,
@@ -274,6 +288,7 @@ mod app {
                         "activate" => cmd::activate(&mut wm8731),
                         "deactivate" => cmd::deactivate(&mut wm8731),
                         "invol" => cmd::invol(&mut wm8731, args),
+                        "inmute" => cmd::inmute(&mut wm8731, args),
                         "hpvol" => cmd::hpvol(&mut wm8731, args),
                         "micboost" => cmd::micboost(&mut wm8731, args),
                         "mutemic" => cmd::mutemic(&mut wm8731, args),
@@ -292,6 +307,11 @@ mod app {
                         "oscpd" => cmd::oscpd(&mut wm8731, args),
                         "clkoutpd" => cmd::clkoutpd(&mut wm8731, args),
                         "poweroff" => cmd::poweroff(&mut wm8731, args),
+                        "lrp" => cmd::lrp(&mut wm8731, args),
+                        "lrswap" => cmd::lrswap(&mut wm8731, args),
+                        "bclkinv" => cmd::bclkinv(&mut wm8731, args),
+                        "clkidiv2" => cmd::clkidiv2(&mut wm8731, args),
+                        "clkodiv2" => cmd::clkodiv2(&mut wm8731, args),
                         _ => (),
                     }
                 }
@@ -304,20 +324,7 @@ mod app {
     #[task(capacity = 10, local = [log_chan])]
     fn logger(cx: logger::Context, log: Log) {
         //cx.local.log_chan.write_str(log).ok();
-        match log {
-            Log::Str(val) => {
-                writeln!(cx.local.log_chan, "{}", val).ok();
-            }
-            Log::U8(val) => {
-                writeln!(cx.local.log_chan, "{:08b}", val).ok();
-            }
-            Log::U16(val) => {
-                writeln!(cx.local.log_chan, "{:02x}", val).ok();
-            }
-            _ => {
-                writeln!(cx.local.log_chan, "unimplemented").ok();
-            }
-        }
+        log.log(cx.local.log_chan);
     }
 
     #[task(shared = [i2s2ext])]
@@ -360,14 +367,14 @@ mod app {
         i2s2.lock(|i2s2| {
             let i2s2_sr_read = i2s2.sr.read();
             if i2s2_sr_read.rxne().bit() {
-                cx.local.i2s.count += 1;
+                //cx.local.i2s.count += 1;
                 let _ = i2s2_sr_read.chside().bit();
                 let data = i2s2.dr.read().dr().bits();
-                if cx.local.i2s.count == 48_000 {
-                    //rprintln!("received {}", data);
-                    logger::spawn(Log::U16(data)).ok();
-                    cx.local.i2s.count = 0;
-                }
+                //if cx.local.i2s.count == 48_000 {
+                //    //rprintln!("received {}", data);
+                //    logger::spawn(Log::U16(data)).ok();
+                //    cx.local.i2s.count = 0;
+                //}
             }
             if i2s2_sr_read.fre().bit() {
                 //can never happen in master mode
@@ -393,12 +400,17 @@ mod app {
                 let min = i16::MIN / 4;
                 let max = i16::MAX / 4;
                 let mut step = cx.local.i2s.step;
-                let per = 360;
-                let val = if step < per { min } else { max };
+                let per = 48_000 / 100;
+                let val = if step < per / 2 { min } else { max };
 
                 step += 1;
                 if step >= per {
                     step = 0
+                }
+                cx.local.i2s.count += 1;
+                if cx.local.i2s.count == 48_000 / 4 {
+                    logger::spawn(Log::I16(val)).ok();
+                    cx.local.i2s.count = 0;
                 }
                 cx.local.i2s.step = step;
 
