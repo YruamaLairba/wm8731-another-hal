@@ -54,6 +54,7 @@ impl Log {
 pub struct I2sLocal {
     pub step: u16,
     pub count: u16,
+    pub adc_data: (u16, u16),
 }
 
 #[rtic::app(device = stm32f4xx_hal::pac, peripherals = true,dispatchers = [EXTI0, EXTI1, EXTI2, EXTI3 ])]
@@ -64,9 +65,8 @@ mod app {
     use super::Log;
     use super::MyWm8731;
     use commands as cmd;
-    use core::fmt::Write;
     use hal::gpio::NoPin;
-    use hal::pac::Interrupt;
+    use hal::pac::spi1::sr::CHSIDE_A;
     use hal::pac::{I2S2EXT, SPI2};
     use hal::prelude::*;
     use hal::spi;
@@ -93,7 +93,7 @@ mod app {
     #[local]
     struct Local {
         input: rtt_target::DownChannel,
-        i2s: I2sLocal,
+        i2s_local: I2sLocal,
         log_chan: rtt_target::UpChannel,
         //output: rtt_target::UpChannel,
     }
@@ -217,11 +217,11 @@ mod app {
             wm8731.set_mutemic(true);
             wm8731.set_insel(InselV::Line);
             wm8731.set_bypass(false);
-            wm8731.set_dacsel(false);
+            wm8731.set_dacsel(true);
             wm8731.set_sidetone(false);
             //digital_audio_path
             //wm8731.set_adchpd(false);
-            //wm8731.set_dacmu(false);
+            wm8731.set_dacmu(false);
             //wm8731.set_deemp(false);
             //digital_audio_interface
             wm8731.set_format(FormatV::I2s);
@@ -257,7 +257,7 @@ mod app {
             },
             Local {
                 input,
-                i2s: Default::default(),
+                i2s_local: Default::default(),
                 log_chan,
             },
             init::Monotonics(),
@@ -338,27 +338,23 @@ mod app {
         logger::spawn(Log::Str("Resynced (resync)")).ok();
     }
 
-    #[task(priority = 4, binds = SPI2, local = [i2s], shared = [i2s2, i2s2ext, wm8731])]
-    fn i2s2(mut cx: i2s2::Context) {
+    #[task(priority = 4, binds = SPI2, local = [i2s_local], shared = [i2s2, i2s2ext, wm8731])]
+    fn i2s2(cx: i2s2::Context) {
+        use CHSIDE_A::*;
         let mut i2s2 = cx.shared.i2s2;
         let mut i2s2ext = cx.shared.i2s2ext;
-        let mut wm8731 = cx.shared.wm8731;
+        let i2s_local: &mut I2sLocal = cx.local.i2s_local;
 
         i2s2.lock(|i2s2| {
             let i2s2_sr_read = i2s2.sr.read();
             if i2s2_sr_read.rxne().bit() {
-                //cx.local.i2s.count += 1;
-                let _ = i2s2_sr_read.chside().bit();
-                let data = i2s2.dr.read().dr().bits();
-                //if cx.local.i2s.count == 48_000 {
-                //    //rprintln!("received {}", data);
-                //    logger::spawn(Log::U16(data)).ok();
-                //    cx.local.i2s.count = 0;
-                //}
+                match i2s2_sr_read.chside().variant() {
+                    LEFT => i2s_local.adc_data.0 = i2s2.dr.read().dr().bits(),
+                    RIGHT => i2s_local.adc_data.1 = i2s2.dr.read().dr().bits(),
+                }
             }
             if i2s2_sr_read.fre().bit() {
                 //can never happen in master mode
-
                 logger::spawn(Log::Str("I2sFrameError")).ok();
             }
             if i2s2_sr_read.ovr().bit() {
@@ -376,28 +372,10 @@ mod app {
         i2s2ext.lock(|i2s2ext| {
             let i2s2ext_sr_read = i2s2ext.sr.read();
             if i2s2ext_sr_read.txe().bit() {
-                let _ = i2s2ext_sr_read.chside().bit();
-                let min = i16::MIN / 16;
-                let max = i16::MAX / 16;
-                let mut step = cx.local.i2s.step;
-                let per = 48_000 / 100;
-                let val = if step < per / 2 { min } else { max };
-
-                step += 1;
-                if step >= per {
-                    step = 0
+                match i2s2ext_sr_read.chside().variant() {
+                    LEFT => i2s2ext.dr.write(|w| w.dr().bits(i2s_local.adc_data.0)),
+                    RIGHT => i2s2ext.dr.write(|w| w.dr().bits(i2s_local.adc_data.1)),
                 }
-                cx.local.i2s.count += 1;
-                if cx.local.i2s.count == 48_000 / 4 {
-                    logger::spawn(Log::I16(val)).ok();
-                    cx.local.i2s.count = 0;
-                }
-                cx.local.i2s.step = step;
-
-                i2s2ext.dr.write(|w| w.dr().bits(val as _));
-                //if cx.local.i2s.step >= per as u16 {
-                //    cx.local.i2s.step = 0;
-                //}
             }
 
             if i2s2ext_sr_read.fre().bit() {
