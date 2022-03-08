@@ -296,6 +296,7 @@ mod app {
                         "dacsel" => cmd::dacsel(&mut wm8731, args),
                         "sidetone" => cmd::sidetone(&mut wm8731, args),
                         "adchpd" => cmd::adchpd(&mut wm8731, args),
+                        "deemp" => cmd::deemp(&mut wm8731, args),
                         "dacmu" => cmd::dacmu(&mut wm8731, args),
                         "hpor" => cmd::hpor(&mut wm8731, args),
                         "lineinpd" => cmd::lineinpd(&mut wm8731, args),

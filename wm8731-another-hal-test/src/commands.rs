@@ -332,6 +332,33 @@ bool_cmd!(sidetone, set_sidetone);
 //sideatt
 
 bool_cmd!(adchpd, set_adchpd);
+
+pub fn deemp<'a, I: WriteFrame>(
+    mut wm8731: impl Mutex<T = Wm8731<I>>,
+    mut opts: impl Iterator<Item = &'a str>,
+) {
+    use DeempV::*;
+    if let Some(val) = opts.next() {
+        let val2 = match val {
+            "disable" => Disable,
+            "32k" => F32k,
+            "44k1" => F44k1,
+            "48k" => F48k,
+            _ => return,
+        };
+        wm8731.lock(|wm8731| {
+            wm8731.set_deemp(val2);
+        });
+        rprintln!("deemp {}", val);
+    } else {
+        match wm8731.lock(|wm8731| wm8731.deemp()) {
+            Disable => rprintln!("deemp is disabled"),
+            F32k => rprintln!("deemp is 32k"),
+            F44k1 => rprintln!("deemp is 44k1"),
+            F48k => rprintln!("deemp is 48k"),
+        }
+    }
+}
 bool_cmd!(dacmu, set_dacmu);
 bool_cmd!(hpor, set_hpor);
 
