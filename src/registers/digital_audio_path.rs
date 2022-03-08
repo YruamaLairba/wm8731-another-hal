@@ -75,6 +75,7 @@ impl DigitalAudioPath {
     }
 }
 
+/// De-emphasis filter selection.
 pub enum DeempV {
     Disable = 0b00,
     F32k = 0b01,

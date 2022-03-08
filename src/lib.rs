@@ -14,6 +14,8 @@ pub use registers::analogue_audio_path::{InselV, SideAttdB};
 #[doc(inline)]
 pub use registers::digital_audio_interface::{FormatV, IwlV, MsV};
 #[doc(inline)]
+pub use registers::digital_audio_path::DeempV;
+#[doc(inline)]
 pub use registers::headphone_out::HpVoldB;
 #[doc(inline)]
 pub use registers::line_in::InVoldB;
@@ -341,10 +343,8 @@ where
         self.digital_audio_path.adchpd()
     }
 
-    #[cfg(doc)]
-    /// *Unavailable yet because it require some strategies to get meaningfull values.*
-    pub fn deemp(&self) -> bool {
-        todo!()
+    pub fn deemp(&self) -> DeempV {
+        self.digital_audio_path.deemp()
     }
 
     pub fn dacmu(&self) -> bool {
@@ -361,10 +361,16 @@ where
         self.interface.write(self.digital_audio_path.to_frame());
     }
 
-    #[cfg(doc)]
-    /// *Unavailable yet because it require some strategies to prevent invalid values.*
-    pub fn set_deemp(&mut self, value: bool) {
-        todo!()
+    /// Disable or select a de-emphasis filter. It's up to user to choose the correct value.
+    ///
+    /// When using de-emphasis, the correct value of `DEEMP` should match the actual DAC sampling
+    /// frequency. It's up to user to choose the correct value because actual sampling
+    /// frequency depends on clocks and this HAL does'nt know about clocks. Setting a wrong value
+    /// is not unsafe, it just apply a filter that doesn't conform
+    /// with CD de-emphasis.
+    pub fn set_deemp(&mut self, value: DeempV) {
+        self.digital_audio_path.set_deemp(value);
+        self.interface.write(self.digital_audio_path.to_frame());
     }
 
     /// DAC Soft Mute Control. Does'nt work correctly with some sampling configurations.
