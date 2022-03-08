@@ -87,7 +87,6 @@ mod app {
     struct Shared {
         i2s2: SPI2,
         i2s2ext: I2S2EXT,
-        activate: bool,
         wm8731: MyWm8731,
     }
 
@@ -217,7 +216,7 @@ mod app {
             wm8731.set_micboost(false);
             wm8731.set_mutemic(true);
             wm8731.set_insel(InselV::Line);
-            wm8731.set_bypass(true);
+            wm8731.set_bypass(false);
             wm8731.set_dacsel(false);
             wm8731.set_sidetone(false);
             //digital_audio_path
@@ -246,14 +245,14 @@ mod app {
                 delay.delay_ms(10_u32);
             }
         }
-        let activate = true;
-        rtic::pend(Interrupt::SPI2);
+        wm8731.activate();
+        i2s2ext.i2scfgr.modify(|_, w| w.i2se().enabled());
+        i2s2.i2scfgr.modify(|_, w| w.i2se().enabled());
 
         (
             Shared {
                 i2s2,
                 i2s2ext,
-                activate,
                 wm8731,
             },
             Local {
@@ -339,30 +338,11 @@ mod app {
         logger::spawn(Log::Str("Resynced (resync)")).ok();
     }
 
-    #[task(priority = 4, binds = SPI2, local = [i2s], shared = [i2s2, i2s2ext, activate, wm8731])]
+    #[task(priority = 4, binds = SPI2, local = [i2s], shared = [i2s2, i2s2ext, wm8731])]
     fn i2s2(mut cx: i2s2::Context) {
         let mut i2s2 = cx.shared.i2s2;
         let mut i2s2ext = cx.shared.i2s2ext;
         let mut wm8731 = cx.shared.wm8731;
-        let activate = cx.shared.activate.lock(|a| {
-            let ret = *a;
-            *a = false;
-            ret
-        });
-        #[cfg(FALSE)]
-        if activate {
-            rprintln!("activation request");
-            i2s2ext.lock(|i2s2ext| {
-                i2s2ext.i2scfgr.modify(|_, w| w.i2se().enabled());
-            });
-            i2s2.lock(|i2s2| {
-                i2s2.i2scfgr.modify(|_, w| w.i2se().enabled());
-            });
-            wm8731.lock(|wm8731| {
-                wm8731.deactivate();
-                //wm8731.activate();
-            });
-        }
 
         i2s2.lock(|i2s2| {
             let i2s2_sr_read = i2s2.sr.read();
@@ -397,8 +377,8 @@ mod app {
             let i2s2ext_sr_read = i2s2ext.sr.read();
             if i2s2ext_sr_read.txe().bit() {
                 let _ = i2s2ext_sr_read.chside().bit();
-                let min = i16::MIN / 4;
-                let max = i16::MAX / 4;
+                let min = i16::MIN / 16;
+                let max = i16::MAX / 16;
                 let mut step = cx.local.i2s.step;
                 let per = 48_000 / 100;
                 let val = if step < per / 2 { min } else { max };
