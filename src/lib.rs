@@ -150,48 +150,42 @@ where
         (self.left_line_in.mute(), self.right_line_in.mute())
     }
 
-    pub fn set_left_invol(&mut self, volume: InVoldB) -> &mut Self {
+    pub fn set_left_invol(&mut self, volume: InVoldB) {
         self.left_line_in.set_vol(volume);
         self.left_line_in.set_both(false);
         self.interface.write(self.left_line_in.to_frame());
-        self
     }
 
-    pub fn set_right_invol(&mut self, volume: InVoldB) -> &mut Self {
+    pub fn set_right_invol(&mut self, volume: InVoldB) {
         self.right_line_in.set_vol(volume);
         self.right_line_in.set_both(false);
         self.interface.write(self.right_line_in.to_frame());
-        self
     }
 
-    pub fn set_both_invol(&mut self, volume: InVoldB) -> &mut Self {
+    pub fn set_both_invol(&mut self, volume: InVoldB) {
         self.left_line_in.set_vol(volume);
         self.right_line_in.set_vol(volume);
         self.left_line_in.set_both(true);
         self.interface.write(self.left_line_in.to_frame());
-        self
     }
 
-    pub fn set_left_inmute(&mut self, mute: bool) -> &mut Self {
+    pub fn set_left_inmute(&mut self, mute: bool) {
         self.left_line_in.set_mute(mute);
         self.left_line_in.set_both(false);
         self.interface.write(self.left_line_in.to_frame());
-        self
     }
 
-    pub fn set_right_inmute(&mut self, mute: bool) -> &mut Self {
+    pub fn set_right_inmute(&mut self, mute: bool) {
         self.right_line_in.set_mute(mute);
         self.right_line_in.set_both(false);
         self.interface.write(self.right_line_in.to_frame());
-        self
     }
 
-    pub fn set_both_inmute(&mut self, mute: bool) -> &mut Self {
+    pub fn set_both_inmute(&mut self, mute: bool) {
         self.left_line_in.set_mute(mute);
         self.right_line_in.set_mute(mute);
         self.left_line_in.set_both(true);
         self.interface.write(self.left_line_in.to_frame());
-        self
     }
 }
 
@@ -219,7 +213,7 @@ where
     /// When `zcen` is `true`, volume is set when signal is close to zero to avoid audible
     /// noise. The volume may never change if signal at gain stage input get never close to +/-
     /// 20mv.
-    pub fn set_left_hpvol(&mut self, volume: HpVoldB, zcen: bool) -> &mut Self {
+    pub fn set_left_hpvol(&mut self, volume: HpVoldB, zcen: bool) {
         self.left_hpvol = volume;
         self.interface.write(
             LeftHeadphoneOut::default()
@@ -228,7 +222,6 @@ where
                 .set_vol(volume)
                 .to_frame(),
         );
-        self
     }
 
     /// Set right headphone out volume.
@@ -238,7 +231,7 @@ where
     /// When `zcen` is `true`, volume is set when signal is close to zero to avoid audible
     /// noise. The volume may never change if signal at gain stage input get never close to +/-
     /// 20mv.
-    pub fn set_right_hpvol(&mut self, volume: HpVoldB, zcen: bool) -> &mut Self {
+    pub fn set_right_hpvol(&mut self, volume: HpVoldB, zcen: bool) {
         self.right_hpvol = volume;
         self.interface.write(
             RightHeadphoneOut::default()
@@ -247,7 +240,6 @@ where
                 .set_vol(volume)
                 .to_frame(),
         );
-        self
     }
 
     /// Set both headphone out volume.
@@ -257,7 +249,7 @@ where
     /// When `zcen` is `true`, volume is set when signal is close to zero to avoid audible
     /// noise. The volume may never change if signal at gain stage input get never close to +/-
     /// 20mv.
-    pub fn set_both_hpvol(&mut self, volume: HpVoldB, zcen: bool) -> &mut Self {
+    pub fn set_both_hpvol(&mut self, volume: HpVoldB, zcen: bool) {
         self.left_hpvol = volume;
         self.right_hpvol = volume;
         self.interface.write(
@@ -267,7 +259,6 @@ where
                 .set_vol(volume)
                 .to_frame(),
         );
-        self
     }
 }
 
@@ -304,46 +295,39 @@ where
         self.analogue_audio_path.sideatt()
     }
 
-    pub fn set_micboost(&mut self, value: bool) -> &mut Self {
+    pub fn set_micboost(&mut self, value: bool) {
         self.analogue_audio_path.set_micboost(value);
         self.interface.write(self.analogue_audio_path.to_frame());
-        self
     }
 
-    pub fn set_mutemic(&mut self, value: bool) -> &mut Self {
+    pub fn set_mutemic(&mut self, value: bool) {
         self.analogue_audio_path.set_mutemic(value);
         self.interface.write(self.analogue_audio_path.to_frame());
-        self
     }
 
-    pub fn set_insel(&mut self, value: InselV) -> &mut Self {
+    pub fn set_insel(&mut self, value: InselV) {
         self.analogue_audio_path.set_insel(value);
         self.interface.write(self.analogue_audio_path.to_frame());
-        self
     }
 
-    pub fn set_bypass(&mut self, value: bool) -> &mut Self {
+    pub fn set_bypass(&mut self, value: bool) {
         self.analogue_audio_path.set_bypass(value);
         self.interface.write(self.analogue_audio_path.to_frame());
-        self
     }
 
-    pub fn set_dacsel(&mut self, value: bool) -> &mut Self {
+    pub fn set_dacsel(&mut self, value: bool) {
         self.analogue_audio_path.set_dacsel(value);
         self.interface.write(self.analogue_audio_path.to_frame());
-        self
     }
 
-    pub fn set_sidetone(&mut self, value: bool) -> &mut Self {
+    pub fn set_sidetone(&mut self, value: bool) {
         self.analogue_audio_path.set_sidetone(value);
         self.interface.write(self.analogue_audio_path.to_frame());
-        self
     }
 
-    pub fn set_sideatt(&mut self, value: SideAttdB) -> &mut Self {
+    pub fn set_sideatt(&mut self, value: SideAttdB) {
         self.analogue_audio_path.set_sideatt(value);
         self.interface.write(self.analogue_audio_path.to_frame());
-        self
     }
 }
 
@@ -372,15 +356,14 @@ where
     }
 
     /// Disable/Enable ADC high pass filter. `true` to disable it, `false` to enable it.
-    pub fn set_adchpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_adchpd(&mut self, value: bool) {
         self.digital_audio_path.set_adchpd(value);
         self.interface.write(self.digital_audio_path.to_frame());
-        self
     }
 
     #[cfg(doc)]
     /// *Unavailable yet because it require some strategies to prevent invalid values.*
-    pub fn set_deemp(&mut self, value: bool) -> &mut Self {
+    pub fn set_deemp(&mut self, value: bool) {
         todo!()
     }
 
@@ -389,16 +372,14 @@ where
     /// DAC Soft Mute Control doesn't work correctly when `SR` is `0b0111` or `0b1111`. This concern
     /// sampling configurations where `core clock` / `sampling frequency` is less or equal to
     /// 192.
-    pub fn set_dacmu(&mut self, value: bool) -> &mut Self {
+    pub fn set_dacmu(&mut self, value: bool) {
         self.digital_audio_path.set_dacmu(value);
         self.interface.write(self.digital_audio_path.to_frame());
-        self
     }
 
-    pub fn set_hpor(&mut self, value: bool) -> &mut Self {
+    pub fn set_hpor(&mut self, value: bool) {
         self.digital_audio_path.set_hpor(value);
         self.interface.write(self.digital_audio_path.to_frame());
-        self
     }
 }
 
@@ -432,45 +413,37 @@ where
         self.power_down.poweroff()
     }
 
-    pub fn set_lineinpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_lineinpd(&mut self, value: bool) {
         self.power_down.set_lineinpd(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
-    pub fn set_micpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_micpd(&mut self, value: bool) {
         self.power_down.set_micpd(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
-    pub fn set_adcpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_adcpd(&mut self, value: bool) {
         self.power_down.set_adcpd(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
-    pub fn set_dacpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_dacpd(&mut self, value: bool) {
         self.power_down.set_dacpd(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
-    pub fn set_outpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_outpd(&mut self, value: bool) {
         self.power_down.set_outpd(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
-    pub fn set_oscpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_oscpd(&mut self, value: bool) {
         self.power_down.set_oscpd(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
-    pub fn set_clkoutpd(&mut self, value: bool) -> &mut Self {
+    pub fn set_clkoutpd(&mut self, value: bool) {
         self.power_down.set_clkoutpd(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
-    pub fn set_poweroff(&mut self, value: bool) -> &mut Self {
+    pub fn set_poweroff(&mut self, value: bool) {
         self.power_down.set_poweroff(value);
         self.interface.write(self.power_down.to_frame());
-        self
     }
 }
 
@@ -498,41 +471,35 @@ where
         self.digital_audio_interface.bclkinv()
     }
 
-    pub fn set_format(&mut self, value: FormatV) -> &mut Self {
+    pub fn set_format(&mut self, value: FormatV) {
         if !self.active.get() {
             self.digital_audio_interface.set_format(value);
         }
-        self
     }
-    pub fn set_iwl(&mut self, value: IwlV) -> &mut Self {
+    pub fn set_iwl(&mut self, value: IwlV) {
         if !self.active.get() {
             self.digital_audio_interface.set_iwl(value);
         }
-        self
     }
-    pub fn set_lrp(&mut self, value: bool) -> &mut Self {
+    pub fn set_lrp(&mut self, value: bool) {
         if !self.active.get() {
             self.digital_audio_interface.set_lrp(value);
         }
-        self
     }
-    pub fn set_lrswap(&mut self, value: bool) -> &mut Self {
+    pub fn set_lrswap(&mut self, value: bool) {
         if !self.active.get() {
             self.digital_audio_interface.set_lrswap(value);
         }
-        self
     }
-    pub fn set_ms(&mut self, value: MsV) -> &mut Self {
+    pub fn set_ms(&mut self, value: MsV) {
         if !self.active.get() {
             self.digital_audio_interface.set_ms(value);
         }
-        self
     }
-    pub fn set_bclkinv(&mut self, value: bool) -> &mut Self {
+    pub fn set_bclkinv(&mut self, value: bool) {
         if !self.active.get() {
             self.digital_audio_interface.set_bclkinv(value);
         }
-        self
     }
 }
 
@@ -553,22 +520,19 @@ where
     }
 
     /// Set Sampling Rates.
-    pub fn set_sampling_rates(&mut self, value: SamplingRates) -> &mut Self {
+    pub fn set_sampling_rates(&mut self, value: SamplingRates) {
         if !self.active.get() {
             self.sampling.set_sampling_rates(value);
         }
-        self
     }
-    pub fn set_clkidiv2(&mut self, value: bool) -> &mut Self {
+    pub fn set_clkidiv2(&mut self, value: bool) {
         if !self.active.get() {
             self.sampling.set_clkidiv2(value);
         }
-        self
     }
-    pub fn set_clkodiv2(&mut self, value: bool) -> &mut Self {
+    pub fn set_clkodiv2(&mut self, value: bool) {
         if !self.active.get() {
             self.sampling.set_clkodiv2(value);
         }
-        self
     }
 }
