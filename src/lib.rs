@@ -1,8 +1,5 @@
 #![no_std]
 
-#[macro_use]
-mod macros;
-
 pub mod interface;
 pub mod prelude;
 pub mod registers;
