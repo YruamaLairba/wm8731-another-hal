@@ -8,6 +8,7 @@ pub struct Active {
     data: bool,
 }
 
+#[allow(clippy::derivable_impls)]
 impl Default for Active {
     fn default() -> Self {
         Self { data: false }

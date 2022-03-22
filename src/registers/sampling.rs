@@ -101,6 +101,7 @@ pub struct SamplingRates {
     inner: u8,
 }
 
+#[allow(clippy::derivable_impls)]
 impl Default for SamplingRates {
     fn default() -> Self {
         Self { inner: 0 }
