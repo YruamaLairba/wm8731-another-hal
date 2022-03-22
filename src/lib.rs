@@ -5,7 +5,7 @@ mod macros;
 
 pub mod interface;
 pub mod prelude;
-mod registers;
+pub mod registers;
 
 use interface::WriteFrame;
 
