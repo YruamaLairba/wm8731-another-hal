@@ -11,8 +11,8 @@ homepage = "https://github.com/YruamaLairba/wm8731-another-hal"
 #documentation
 repository = "https://github.com/YruamaLairba/wm8731-another-hal"
 license = "MIT OR Apache-2.0"
-keywords = ["wm8731", "hal", "audio", "codec", "wolfson", "cirrus-logic", ]
-categories = [ "embedded", "no-std", "hardware-support"]
+keywords = ["wm8731", "hal", "audio", "codec", "wolfson"]
+categories = ["embedded", "no-std", "hardware-support"]
 exclude = ["WM8731_WAN0117.pdf"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
