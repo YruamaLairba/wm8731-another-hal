@@ -91,8 +91,8 @@ impl<SPI, CS, W> SPIInterface<SPI, CS, W> {
             w: PhantomData::<W>,
         }
     }
-    pub fn release(self) -> SPI {
-        self.spi
+    pub fn release(self) -> (SPI, CS) {
+        (self.spi, self.cs)
     }
 }
 
