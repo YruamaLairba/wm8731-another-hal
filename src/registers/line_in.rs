@@ -1,4 +1,4 @@
-//! Line inputs configuration
+//! Left and Right Line In.
 #![allow(clippy::new_without_default)]
 
 use crate::interface::Frame;
@@ -16,17 +16,17 @@ pub struct Left;
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Right;
 
-/// Line in configuration builder.
+/// Line In register generalisation.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct LineIn<CHANNEL> {
     data: u16,
     channel: PhantomData<CHANNEL>,
 }
 
-/// Left line in configuration builder.
+/// Left Line In register.
 pub type LeftLineIn = LineIn<Left>;
 
-/// Right line in configuration builder.
+/// Right Line In register.
 pub type RightLineIn = LineIn<Right>;
 
 impl Default for LeftLineIn {

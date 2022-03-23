@@ -1,4 +1,4 @@
-//! Analogue Audio Path configuration
+//! Analogue Audio Path Control.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
@@ -6,7 +6,7 @@ use crate::interface::Frame;
 mod side_att_db;
 pub use side_att_db::*;
 
-/// Analogue audio path configuration builder.
+/// Analogue Audio Path Control register.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct AnalogueAudioPath {
     data: u8,

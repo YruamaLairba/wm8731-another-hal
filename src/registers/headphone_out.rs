@@ -1,4 +1,4 @@
-//! Headphone ouputs configuration
+//! Left and Right Headphone Out.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
@@ -16,17 +16,17 @@ pub struct Left;
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Right;
 
-///Headphone out configuration builder
+///Headphone Out register generalisation.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct HeadphoneOut<CHANNEL> {
     data: u16,
     channel: PhantomData<CHANNEL>,
 }
 
-///Marker indicating left headphone output concern
+///Left Headphone Out register.
 pub type LeftHeadphoneOut = HeadphoneOut<Left>;
 
-///Marker indicating left headphone output concern
+///Right Headphone Out register.
 pub type RightHeadphoneOut = HeadphoneOut<Right>;
 
 impl Default for LeftHeadphoneOut {

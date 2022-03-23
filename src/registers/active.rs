@@ -1,8 +1,8 @@
-//! Activate or deactivate digital audio interface
+//! Active Control register. Activate or deactivate digital audio interface.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
-/// Power down configuration builder.
+/// Active Control register. Activate or deactivate digital audio interface.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Active {
     data: bool,

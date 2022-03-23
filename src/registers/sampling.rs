@@ -1,8 +1,8 @@
-//! Command builder for sampling configuration.
+//! Sampling Control.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
-/// Builder for sampling command.
+/// Sampling Control register.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Sampling {
     data: u8,
@@ -65,11 +65,11 @@ impl Sampling {
 /// fields. To achieve that, it wrap values of those fields and provide valid values through
 /// many associated constants.
 ///
-/// # First naming convention
+/// # Associated constant name
 ///
-/// The first convention is intended to represent uniquely all possible configurations and for use
-/// with non standards clocks. It use a clock divider semantic with the pattern
-/// `ADC<div1>_DAC<div2>_<letter>` where:
+/// Names of the associated constants are chosen to represent all possible configuration while
+/// being clock agnostic. They use a convention based on clock dividers. The convention follow the
+/// pattern `ADC<div1>_DAC<div2>_<letter>` where:
 ///   - `<div1>` is how many time the core clock is divided to generate the ADC sampling frequency.
 ///   - `<div2>` is how many time the core clock is divided to generate the DAC sampling frequency.
 ///   - `<letter>` is a letter to differentiate configurations producing same clock division :
@@ -79,14 +79,10 @@ impl Sampling {
 ///     * D is used for configuration presented with 16.9344MHz clock in datasheet.
 ///     * U is used for usb mode configuration using 12MHz clock.
 ///
-/// ## Example with `ADC256_DAC1536_A`:
+/// Example, `ADC256_DAC1536_A` means:
 ///  - ADC sampling frequency is core clock frequency divided by 256.
 ///  - DAC sampling frequency is core clock frequency divided by 1536.
 ///  - This configuration is presented with 12.288MHz clock in datasheet.
-///
-/// # Second naming convention
-///
-/// The second convention is intended to make more readable code. TODO!
 ///
 /// # Layout
 ///

@@ -1,8 +1,10 @@
-//! Reset the device
+//! Reset register. Reset the device.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
-/// Reset regiters config. Can have only one value so it contains not data.
+/// Reset register. Reset the device.
+///
+/// Can have only one value so it contains not data.
 #[derive(Default, Debug, Eq, PartialEq, Clone, Copy)]
 pub struct Reset;
 

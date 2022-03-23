@@ -1,8 +1,8 @@
-//! Digital Audio Path configuration
+//! Digital Audio Interface Format.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
-/// builder for digital audio interface configuration
+/// Digital Audio Interface Format register.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct DigitalAudioInterface {
     data: u8,

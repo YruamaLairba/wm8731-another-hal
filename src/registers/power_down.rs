@@ -1,8 +1,8 @@
-//! Power down configuration
+//! Power Down Control.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
-/// Power down configuration builder.
+/// Power Down Control register.
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct PowerDown {
     data: u8,

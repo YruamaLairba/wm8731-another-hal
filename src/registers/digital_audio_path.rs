@@ -1,8 +1,8 @@
-//! Digital Audio Path configuration
+//! Digital Audio Path Control.
 #![allow(clippy::new_without_default)]
 use crate::interface::Frame;
 
-/// Digital audio path configuration builder.
+/// Digital Audio Path Control register.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct DigitalAudioPath {
     data: u8,
