@@ -1,4 +1,19 @@
+//! A thin HAL to control and configure the Cirrus Logic/Wolfson WM8731 audio codec
+//!
+//! This crate provide abstractions to communicate with the WM8731
+#![doc = concat!("[Software Control Interface](",
+    env!("CARGO_MANIFEST_DIR"),
+    "/WM8731_v4.9.pdf#%5B%7B%22num%22%3A141%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22FitH%22%7D%2C560%5D)")]
+//! and edit content of
+#![doc = concat!("[Control Registers](",
+    env!("CARGO_MANIFEST_DIR"),
+    "/WM8731_v4.9.pdf#%5B%7B%22num%22%3A139%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22FitH%22%7D%2C697%5D).")]
+//! Look [Wm8731] documentation to know how to control the codec.
+//!
+//! Part of this documentation refers to WM8731 datasheets. Copy are available in the project
+//! repository.
 #![no_std]
+#![doc(html_root_url = "https://docs.rs/embedded-hal/0.2.0/")]
 
 pub mod interface;
 pub mod prelude;
@@ -31,7 +46,56 @@ use registers::power_down::PowerDown;
 use registers::reset::Reset;
 use registers::sampling::Sampling;
 
-/// The codec driver.
+/// Wm8731 Control Interface Abstraction.
+///
+/// This type provide abstraction of Wm8731 Control Interface. The control is mainly done through
+/// getters and setters methods giving access to a field of a control register. Since control
+/// registers are write only, this type actually mirror registers content to simulate read/write
+/// operation to a particular field.
+///
+/// # Build an instance
+///
+/// Building a `Wm8731` instance is a two step operation. First, you need to instantiate an
+/// interface handling communication details, and then you use this interface to instantiate
+/// a `Wm8731` object. When you have a SPI or an I2C object implementing embeded_hal blocking
+/// write, this is actually fast to do.
+///
+/// ## Building with an I2C interface
+///
+/// In the following example, `i2c1` implements [`embedded_hal::blocking::i2c::Write`]
+/// ```
+/// use wm8731_another_hal::prelude::*;
+///
+/// let address = 0b001_1010; //Wm8731 address when CSB is low
+/// let wm8731 = Wm8731::new(I2CInterface::new(i2c1, address));
+/// ```
+///
+/// ## Building with a SPI interface
+///
+/// In the following example, `spi1` implements [`embedded_hal::blocking::spi::Write<u8>`] and `cs_pin`
+/// implements [`embedded_hal::digital::v2::OutputPin`]
+/// ```
+/// use wm8731_another_hal::prelude::*;
+///
+/// let wm8731 = Wm8731::new(SPIInterfaceU8::new(spi1, cs_pin));
+/// ```
+/// # Usage
+///
+/// In general, A Wm8731 object just gives you access to a control register field through one
+/// getter and one setter method. Getter is just the field name in lower case and setter is the
+/// field name prefixed with `set_`. So, `set_mutemic(true)` mute the mic at ADC input. However
+/// there is some exception:
+///  - fields affecting line and headphone volume, to provide more appropriate methods and to allow
+/// code factorisation internally.
+///  - `USB\NORMAL`, `BOSR` and `SR` fields. They are replace by [`SamplingRates`] to prevent invalid
+///  setting.
+///
+///  Please also note that all setters affecting Digital Audio Interface Format and Sampling Control
+///  register don't change field content when the device is active. This is done to prevent
+///  synchronisation issues.
+///
+///  And finally, to know effect of each field, consult the
+#[doc = concat!("[Datasheet page 50](", env!("CARGO_MANIFEST_DIR"), "/WM8731_v4.9.pdf#page=50).")]
 #[derive(Debug)]
 pub struct Wm8731<I>
 where
@@ -335,7 +399,7 @@ impl<I> Wm8731<I>
 where
     I: WriteFrame,
 {
-    ///  `true` means ADC high pass filter disabled. `false` means ADC high pass filter enbaled.
+    ///  `true` means ADC high pass filter disabled. `false` means ADC high pass filter enabled.
     pub fn adchpd(&self) -> bool {
         self.digital_audio_path.adchpd()
     }
@@ -362,7 +426,7 @@ where
     ///
     /// When using de-emphasis, the correct value of `DEEMP` should match the actual DAC sampling
     /// frequency. It's up to user to choose the correct value because actual sampling
-    /// frequency depends on clocks and this HAL does'nt know about clocks. Setting a wrong value
+    /// frequency depends on clocks and this HAL doesn't know about clocks. Setting a wrong value
     /// is not unsafe, it just apply a filter that doesn't conform
     /// with CD de-emphasis.
     pub fn set_deemp(&mut self, value: DeempV) {
@@ -370,7 +434,7 @@ where
         self.interface.write(self.digital_audio_path.to_frame());
     }
 
-    /// DAC Soft Mute Control. Does'nt work correctly with some sampling configurations.
+    /// DAC Soft Mute Control. Doesn't work correctly with some sampling configurations.
     ///
     /// DAC Soft Mute Control doesn't work correctly when `SR` is `0b0111` or `0b1111`. This concern
     /// sampling configurations where `core clock` / `sampling frequency` is less or equal to
@@ -450,7 +514,7 @@ where
     }
 }
 
-/// Digital Audio Interface Format. Value stored only if inactive, sended during activation.
+/// Digital Audio Interface Format. Value stored only if inactive, sent during activation.
 impl<I> Wm8731<I>
 where
     I: WriteFrame,
@@ -506,7 +570,7 @@ where
     }
 }
 
-/// Sampling Control. Value stored only if inactive, sended only during activation.
+/// Sampling Control. Value stored only if inactive, sent only during activation.
 impl<I> Wm8731<I>
 where
     I: WriteFrame,
