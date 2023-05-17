@@ -19,6 +19,11 @@ wm8731-another-hal = {path = ".."}
 version = "0.12"
 features = ["rt", "stm32f411","i2s"] # replace the model of your microcontroller here
 
+[dependencies.embedded-hal-one]
+version = "=1.0.0-alpha.7"
+package = "embedded-hal"
+
+
 # this lets you use `cargo fix`!
 [[bin]]
 name = "wm8731-another-hal-test"
